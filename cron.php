@@ -3,7 +3,7 @@
 use WP_PERICLES\IMPORT\Import;
 
 if (class_exists( 'WP_CLI' ) ){
-	WP_CLI::add_command( 'wp_pericles_import', 'wp_pericles_import' );
+	\WP_CLI::add_command( 'wp_pericles_import', 'wp_pericles_import' );
 }
 
 function wp_pericles_import(){
