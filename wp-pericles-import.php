@@ -13,6 +13,7 @@
 namespace WPPERICLES;
 
 use function add_action;
+use function class_exists;
 use function define;
 use function plugin_basename;
 use function plugin_dir_path;
@@ -71,8 +72,11 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 
+
 		// Include the ACF plugin.
-		include_once WP_PERICLES_ACF_PATH . 'acf.php';
+		if ( ! class_exists( 'ACF' ) ) {
+			include_once WP_PERICLES_ACF_PATH . 'acf.php';
+		}
 	}
 
 	public function my_acf_settings_url( $url ) {
