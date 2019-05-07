@@ -12,7 +12,6 @@
 
 namespace WPPERICLES;
 
-use const __FILE__;
 use function add_action;
 use function define;
 use function plugin_basename;
@@ -35,7 +34,7 @@ class WPPericles {
 		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
-		add_action( 'plugins_loaded', 'load_files' );
+		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
 
 		add_filter( 'cron_schedules', array( $this, 'create_schedule' ) );
 	}
