@@ -20,6 +20,7 @@ use function plugin_dir_path;
 use function plugin_dir_url;
 use function untrailingslashit;
 use function wp_get_upload_dir;
+use const WP_PERICLES_ACF_PATH;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -69,14 +70,15 @@ class WPPericles {
 
 
 	public function load_files() {
-		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
-		require plugin_dir_path( __FILE__ ) . '/cron.php';
-
 
 		// Include the ACF plugin.
 		if ( ! class_exists( 'ACF' ) ) {
 			include_once WP_PERICLES_ACF_PATH . 'acf.php';
 		}
+
+		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
+		require plugin_dir_path( __FILE__ ) . '/cron.php';
+		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
 	}
 
 	public function my_acf_settings_url( $url ) {
