@@ -34,7 +34,7 @@ class WPPericles {
 		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
-		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
+		add_action( 'plugins_loaded', array( $this, 'load_files' ), 20 );
 
 		add_filter( 'cron_schedules', array( $this, 'create_schedule' ) );
 	}
@@ -50,6 +50,14 @@ class WPPericles {
 		define( 'WP_PERICLES_IMPORT_TMP', $path['basedir'] . '/import/temp/' );
 		define( 'WP_PERICLES_IMPORT_IMG', $path['basedir'] . '/import/img/' );
 		define( 'WP_PERICLES_EXPORT_FOLDER', $path['basedir'] . '/import/export/' );
+
+		// Define path and URL to the ACF plugin.
+		//https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
+		define( 'WP_PERICLES_ACF_PATH', WP_PERICLES_PLUGIN_PATH . '/3rd-party/acf/' );
+		define( 'WP_PERICLES_ACF_URL', WP_PERICLES_PLUGIN_URL . '/3rd-party/acf/' );
+		// Customize the url setting to fix incorrect asset URLs.
+		add_filter( 'acf/settings/url', array( $this, 'my_acf_settings_url' ) );
+
 	}
 
 
@@ -62,8 +70,14 @@ class WPPericles {
 	public function load_files() {
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
+
+		// Include the ACF plugin.
+		include_once WP_PERICLES_ACF_PATH . 'acf.php';
 	}
 
+	public function my_acf_settings_url( $url ) {
+		return WP_PERICLES_ACF_URL;
+	}
 
 	public function create_folders() {
 		$path = wp_get_upload_dir();
