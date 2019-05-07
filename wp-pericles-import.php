@@ -79,6 +79,7 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
+		require plugin_dir_path( __FILE__ ) . '/inc/cpt.php';
 	}
 
 	public function my_acf_settings_url( $url ) {
