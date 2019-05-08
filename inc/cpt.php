@@ -7,7 +7,6 @@ add_action( 'init', 'create_cpt', 990 );
 
 // Register Custom Post Type
 	function create_cpt() {
-		if ( true === get_field( 'wppericles_cpt', 'option') ) {
 			$labels = array(
 				'name'                  => _x( 'Real estate properties', 'Post Type General Name', 'wp-pericles-import' ),
 				'singular_name'         => _x( 'Real estate property', 'Post Type Singular Name', 'wp-pericles-import' ),
@@ -58,8 +57,6 @@ add_action( 'init', 'create_cpt', 990 );
 				'show_in_rest'        => true,
 			);
 			register_post_type( 'real-estate-property', $args );
-
-		}
 
 	}
 

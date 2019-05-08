@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'init', 'location_tax', 0 );
 function location_tax() {
-	if ( true === get_field( 'wppericles_cpt', 'option' ) ) {
 		$labels = array(
 			'name'                       => _x( 'Locations', 'Taxonomy General Name', 'wp-pericles-import' ),
 			'singular_name'              => _x( 'Location', 'Taxonomy Singular Name', 'wp-pericles-import' ),
@@ -39,7 +38,7 @@ function location_tax() {
 			'show_in_rest'      => true,
 		);
 		register_taxonomy( 'location_tax', array( 'real-estate-property' ), $args );
-	}
+
 
 }
 

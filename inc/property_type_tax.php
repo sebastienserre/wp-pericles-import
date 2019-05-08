@@ -5,7 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 add_action( 'init', 'property_type_tax', 0 );
 function property_type_tax() {
-	if ( true === get_field( 'wppericles_cpt', 'option' ) ) {
 		$labels = array(
 			'name'                       => _x( 'Property types', 'Taxonomy General Name', 'wp-pericles-import' ),
 			'singular_name'              => _x( 'Property Type', 'Taxonomy Singular Name', 'wp-pericles-import' ),
@@ -39,7 +38,6 @@ function property_type_tax() {
 			'show_in_rest'      => true,
 		);
 		register_taxonomy( 'property_types', array( 'real-estate-property' ), $args );
-	}
 
 }
 
