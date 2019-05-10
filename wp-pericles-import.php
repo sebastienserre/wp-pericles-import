@@ -39,6 +39,7 @@ class WPPericles {
 		add_action( 'plugins_loaded', array( $this, 'load_files' ), 20 );
 
 		add_filter( 'cron_schedules', array( $this, 'create_schedule' ) );
+		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 	}
 
 	public function define_constants() {
@@ -122,6 +123,23 @@ class WPPericles {
 		);
 
 		return $schedules;
+	}
+
+	/**
+	 * @param $path
+	 *
+	 * @return string
+	 */
+	public function acf_save_point( $path ) {
+
+
+		// update path
+		$path = WP_PERICLES_PLUGIN_PATH . '/3rd-party/acf-fields';
+
+
+		// return
+		return $path;
+
 	}
 }
 
