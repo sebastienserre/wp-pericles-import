@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly.
 
-add_action( 'init', 'create_cpt', 990 );
+add_action( 'init', 'create_cpt');
 
 // Register Custom Post Type
 	function create_cpt() {

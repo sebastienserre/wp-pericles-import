@@ -9,6 +9,7 @@ use function basename;
 use function date;
 use function delete_post_meta;
 use function error_log;
+use function explode;
 use function file_exists;
 use function get_post_meta;
 use function get_term_by;
@@ -40,18 +41,61 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Import {
 
+	protected $name;
+	protected $zipname;
+
 	public function __construct() {
 		add_action( 'wp_pericles_cron', array( $this, 'extract_photo' ) );
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
 			add_action( 'admin_init', array( $this, 'extract_photo' ) );
 		}
 
+		$this->zipname = $this->get_zipname();
+		$this->name    = $this->get_zipname();
+
+	}
+
+	/**
+	 * @return string
+	 */
+	public function set_zipname() {
+		$zipname = get_field( 'wppericles_nom_zip', 'option' );
+
+		return $zipname;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_zipname() {
+		return $this->set_zipname();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function set_name() {
+		$name = explode( '.', $this->zipname );
+		$name = $name[0] . '.XML';
+
+		return $name;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_name() {
+		return $this->name;
 	}
 
 	public function extract_photo() {
 
 		$date = date_i18n( 'Y-m-d-H-i' );
-		$file = WP_PERICLES_IMPORT . 'export.ZIP';
+
+
+		if ( ! empty( $this->zipname ) ) {
+			$file = WP_PERICLES_IMPORT . $this->zipname;
+		}
 
 		/**
 		 * Si on a pas de fichier d'export, on arrete tout
@@ -76,7 +120,8 @@ class Import {
 			$zip->extractTo( WP_PERICLES_IMPORT_IMG );
 			$zip->close();
 		}
-		wp_delete_file( WP_PERICLES_IMPORT_IMG . 'export.XML' );
+
+		wp_delete_file( WP_PERICLES_IMPORT_IMG . $this->name );
 		$this->check_listing();
 	}
 
@@ -86,7 +131,7 @@ class Import {
 		 * Retrieve listing
 		 */
 		$args     = array(
-			'post_type'      => 'listing',
+			'post_type'      => apply_filters( 'wp_pericles_post_type', 'real-estate-property' ),
 			'post_status'    => 'publish',
 			'posts_per_page' => - 1,
 		);
@@ -97,7 +142,7 @@ class Import {
 		 * if not => draft
 		 */
 		foreach ( $listings as $listing ) {
-			$listing_ID = get_post_meta( $listing->ID, '_listing_id' );
+			$listing_ID = get_post_meta( $listing->ID, 'wppericles_bien_wppericles_mandat' );
 			$xml        = new XMLReader();
 			$xml->open( WP_PERICLES_IMPORT_TMP . 'export.XML' );
 			$xml->read();
@@ -137,11 +182,11 @@ class Import {
 		$wp_upload_dir = wp_upload_dir();
 		foreach ( $element->BIEN as $bien ) {
 			$args    = array(
-				'post_type'  => 'listing',
+				'post_type'  => apply_filters( 'wp_pericles_post_type', 'real-estate-property' ),
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
-						'key'     => '_listing_id',
+						'key'     => 'wppericles_bien_wppericles_mandat',
 						'value'   => strval( $bien->NO_MANDAT ),
 						'compare' => '=',
 					),

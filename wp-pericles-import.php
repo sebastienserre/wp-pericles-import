@@ -14,10 +14,13 @@ namespace WPPERICLES;
 
 use function add_action;
 use function class_exists;
+use function create_cpt;
 use function define;
+use function flush_rewrite_rules;
 use function plugin_basename;
 use function plugin_dir_path;
 use function plugin_dir_url;
+use function register_activation_hook;
 use function untrailingslashit;
 use function wp_get_upload_dir;
 use const WP_PERICLES_ACF_PATH;
@@ -67,8 +70,15 @@ class WPPericles {
 	public function activation() {
 		$this->create_folders();
 		$this->create_cron();
+		add_action( 'init', [ $this, 'create_cpt' ], 990 );
+
+
 	}
 
+	public function create_cpt(){
+		create_cpt();
+		flush_rewrite_rules();
+	}
 
 	public function load_files() {
 
