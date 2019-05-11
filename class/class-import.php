@@ -4,6 +4,7 @@ namespace WP_PERICLES\IMPORT;
 
 use function __return_false;
 use function add_action;
+use function apply_filters_ref_array;
 use function array_push;
 use function basename;
 use function date;
@@ -25,6 +26,8 @@ use function wp_check_filetype;
 use function wp_delete_file;
 use function wp_insert_attachment;
 use function wp_insert_post;
+use function wp_insert_term;
+use const WP_PERICLES_IMPORT_TMP;
 use function wp_set_post_terms;
 use function wp_update_post;
 use XMLReader;
@@ -41,8 +44,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Import {
 
-	protected $name;
+
 	protected $zipname;
+	protected $name;
 
 	public function __construct() {
 		add_action( 'wp_pericles_cron', array( $this, 'extract_photo' ) );
@@ -51,7 +55,7 @@ class Import {
 		}
 
 		$this->zipname = $this->get_zipname();
-		$this->name    = $this->get_zipname();
+		$this->name    = $this->get_name();
 
 	}
 
@@ -85,7 +89,7 @@ class Import {
 	 * @return string
 	 */
 	public function get_name() {
-		return $this->name;
+		return $this->set_name();
 	}
 
 	public function extract_photo() {
@@ -144,9 +148,10 @@ class Import {
 		foreach ( $listings as $listing ) {
 			$listing_ID = get_post_meta( $listing->ID, 'wppericles_bien_wppericles_mandat' );
 			$xml        = new XMLReader();
-			$xml->open( WP_PERICLES_IMPORT_TMP . 'export.XML' );
+			$xml_file   = WP_PERICLES_IMPORT_TMP . $this->name;
+			$xml->open( $xml_file );
 			$xml->read();
-			$mandat = array();
+			$mandat = [];
 
 			$element = new SimpleXMLElement( $xml->readOuterXml() );
 			foreach ( $element->BIEN as $bien ) {
@@ -175,7 +180,7 @@ class Import {
 		set_time_limit( 1800 );
 		error_log( 'start read_xml' );
 		$xml           = new XMLReader();
-		$open          = $xml->open( WP_PERICLES_IMPORT_TMP . 'export.XML' );
+		$open          = $xml->open( WP_PERICLES_IMPORT_TMP . $this->name );
 		$read          = $xml->read();
 		$name          = $xml->name;
 		$element       = new SimpleXMLElement( $xml->readOuterXml() );
@@ -203,42 +208,6 @@ class Import {
 				$listing_id = '';
 			}
 
-			/**
-			 * format date
-			 */
-
-			$post_date = explode( '/', $bien->DATE_OFFRE );
-			$post_date = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
-
-
-			$post_modified = explode( '/', $bien->DATE_MODIF );
-			$post_modified = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
-
-			$title        = sanitize_text_field( strval( $bien->CATEGORIE ) . ' - ' . strval( $bien->VILLE_OFFRE ) . ' - ' . strval( $bien->NO_MANDAT ) );
-			$content      = sanitize_text_field( strval( $bien->TEXTE_FR ) );
-			$ville        = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
-			$mandat       = intval( strval( $bien->NO_MANDAT ) );
-			$chambres     = intval( strval( $bien->NB_CHAMBRES ) );
-			$sdb          = intval( strval( $bien->NB_SDB ) );
-			$terrain      = intval( strval( $bien->SURF_TERRAIN ) );
-			$habitable    = intval( strval( $bien->SURF_HAB ) );
-			$terrasse     = intval( strval( $bien->TERRASSE ) );
-			$sde          = intval( strval( $bien->NB_SE ) );
-			$chauffage    = sanitize_text_field( strval( $bien->NATURE_CHAUFF ) );
-			$annee_const  = intval( strval( $bien->ANNEE_CONS ) );
-			$price        = intval( strval( $bien->PRIX ) );
-			$public_note  = sanitize_text_field( strval( $bien->CP_OFFRE ) . ' ' . strval( $bien->VILLE_OFFRE ) . ', France' );
-			$secret_note  = sanitize_text_field( strval( $bien->ADRESSE2_OFFRE ) . ' ' . strval( $bien->ADRESSE1_OFFRE ) . ' ' . strval( $bien->CP_OFFRE ) . ' ' . strval( $bien->VILLE_OFFRE ) . ', France' );
-			$nego         = sanitize_text_field( strval( $bien->NEGOCIATEUR ) );
-			$company      = sanitize_text_field( strval( $bien->RS_AGENCE ) . ', ' . strval( $bien->ADRESSE1_AGENCE ) . ', ' . strval( $bien->CP_AGENCE ) . ' ' . strval( $bien->VILLE_AGENCE ) );
-			$phone        = sanitize_text_field( strval( $bien->TEL_AGENCE ) );
-			$web          = sanitize_text_field( strval( $bien->WEB_AGENCE ) );
-			$facebook     = 'https://www.facebook.com/MadaniImmobilier/';
-			$dpe          = intval( strval( $bien->DPE_VAL1 ) );
-			$ges          = sanitize_text_field( strval( $bien->DPE_VAL2 ) );
-			$asp          = sanitize_text_field( strval( $bien->NO_ASP ) );
-			$type_de_bien = sanitize_text_field( strval( $bien->CATEGORIE ) );
-			$slug         = sanitize_text_field( strval( $bien->CATEGORIE ) . '-' . strval( $bien->VILLE_OFFRE ) . '-' . strval( $bien->NO_MANDAT ) );
 
 			/**
 			 * Get Authors ID
@@ -250,7 +219,11 @@ class Import {
 			 * Get Situation Term ID
 			 */
 			$situation = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
-			$situation = get_term_by( 'name', $situation, 'location' );
+			$situation = get_term_by( 'name', $situation, 'location_tax' );
+			if ( ! $situation ){
+				wp_insert_term( $situation, 'location_tax' );
+				$situation = get_term_by( 'name', $situation, 'location_tax' );
+			}
 
 			error_log( $listing_id . ' ' . $situation->term_id );
 			/**
@@ -259,6 +232,24 @@ class Import {
 			foreach ( $authors as $author ) {
 				$author_id[] = $author->ID;
 			}
+
+			$detail = $this->format_postmeta( $bien );
+
+			/**
+			 * format date
+			 */
+
+			$post_date           = explode( '/', $bien->DATE_OFFRE );
+			$detail['post_date'] = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
+
+
+			$post_modified           = explode( '/', $bien->DATE_MODIF );
+			$detail['post_modified'] = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
+
+			$title   = sanitize_text_field( strval( $bien->CATEGORIE ) . ' - ' . strval( $bien->VILLE_OFFRE ) . ' - ' . strval( $bien->NO_MANDAT ) );
+			$content = sanitize_text_field( strval( $bien->TEXTE_FR ) );
+			$slug         = sanitize_text_field( strval( $bien->CATEGORIE ) . '-' . strval( $bien->VILLE_OFFRE ) . '-' . strval( $bien->NO_MANDAT ) );
+
 
 			$postarr = array(
 				'ID'             => $listing_id,
@@ -272,34 +263,15 @@ class Import {
 				'post_date'      => $post_date,
 				'post_modified'  => $post_modified,
 				'post_name'      => $slug,
-				'meta_input'     => array(
-					'madani_asp'      => $asp,
-					'madani_dpe'      => $dpe,
-					'madani_ges'      => $ges,
-					'_price'          => $price,
-					'_price_offer'    => 'sale',
-					'_listing_id'     => $mandat,
-					'_details_1'      => $chambres,
-					'_details_2'      => $sdb,
-					'_details_3'      => $terrain,
-					'_details_4'      => $habitable,
-					'_details_5'      => $terrasse,
-					'_details_6'      => $sde,
-					'_details_7'      => $chauffage,
-					'_details_8'      => $annee_const,
-					'_map_address'    => $ville,
-					'_map_note'       => $public_note,
-					'_map_secret'     => $secret_note,
-					'_agent_name'     => $nego,
-					'_agent_company'  => $company,
-					'_agent_phone'    => $phone,
-					'_agent_website'  => $web,
-					'_agent_facebook' => $facebook,
-				),
+				'meta_input'     => $detail,
 			);
 			$insert  = wp_insert_post( $postarr );
-			wp_set_post_terms( $insert, $type_de_bien, 'listing-type', true );
-			wp_set_post_terms( $insert, $situation->term_id, 'location', true );
+
+			/**
+			 * @todo insert Taxo
+			 */
+			$cat = wp_set_post_terms( $insert, sanitize_text_field( strval( $bien->CATEGORIE ) ), 'property_types', true );
+			$loc = wp_set_post_terms( $insert, $situation->term_id, 'location_tax', true );
 
 			/**
 			 * MAJ Gallery Image
@@ -376,6 +348,124 @@ class Import {
 		}
 		$this->delete_pid();
 		error_log( 'stop read_xml' );
+	}
+
+	public function format_postmeta( $bien ) {
+
+		$detail['wppericles_adresse_wppericles_ville_offre']           = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
+		$detail['wppericles_bien_wppericles_mandat']                   = intval( strval( $bien->NO_MANDAT ) );
+		$detail['wppericles_interieur_wppericles_nb_chambres']         = intval( strval( $bien->NB_CHAMBRES ) );
+		$detail['wppericles_interieur_wppericles_nb_sdb']              = intval( strval( $bien->NB_SDB ) );
+		$detail['wppericles_exterieur_wppericles_surface_terrain']     = intval( strval( $bien->SURF_TERRAIN ) );
+		$detail['wppericles_interieur_wppericles_surface_habitable']   = intval( strval( $bien->SURF_HAB ) );
+		$detail['wppericles_exterieur_wppericles_terrasse']            = intval( strval( $bien->TERRASSE ) );
+		$detail['wppericles_interieur_wppericles_nb_sde']              = intval( strval( $bien->NB_SE ) );
+		$detail['wppericles_pratique_wppericles_nature_chauffage']     = sanitize_text_field( strval( $bien->NATURE_CHAUFF ) );
+		$detail['wppericles_bien_annee_de_construction']               = intval( strval( $bien->ANNEE_CONS ) );
+		$detail['wppericles_bien_wppericles_prix']                     = intval( strval( $bien->PRIX ) );
+		$detail['wppericles_adresse_wppericles_code_postal_offre']     = sanitize_text_field( strval( $bien->CP_OFFRE ) );
+		$detail['wppericles_adresse_wppericles_ville_offre']           = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
+		$detail['wppericles_adresse_wppericles_adresse2_offre']        = sanitize_text_field( strval( $bien->ADRESSE2_OFFRE ) );
+		$detail['wppericles_adresse_wppericles_adresse1_offre']        = sanitize_text_field( strval( $bien->ADRESSE1_OFFRE ) );
+		$detail['wppericles_bien_wppericles_negociateur']              = sanitize_text_field( strval( $bien->NEGOCIATEUR ) );
+		$detail['wppericles_agence_wppericles_raison_sociale']         = sanitize_text_field( strval( $bien->RS_AGENCE ) );
+		$detail['wppericles_agence_wppericles_adresse_1_agence']       = sanitize_text_field( strval( $bien->ADRESSE1_AGENCE ) );
+		$detail['wppericles_agence_wppericles_code_postal_agence']     = sanitize_text_field( strval( $bien->CP_AGENCE ) );
+		$detail['wppericles_agence_wppericles_ville_agence']           = sanitize_text_field( strval( $bien->VILLE_AGENCE ) );
+		$detail['wppericles_agence_wppericles_telephone_agence']       = sanitize_text_field( strval( $bien->TEL_AGENCE ) );
+		$detail['wppericles_agence_wppericles_site_web_agence']        = sanitize_text_field( strval( $bien->WEB_AGENCE ) );
+		$detail['divers_wppericles_score_dpe']                         = sanitize_text_field( intval( strval( $bien->DPE_VAL1 ) ) );
+		$detail['divers_wppericles_score_ges']                         = sanitize_text_field( strval( $bien->DPE_VAL2 ) );
+		$detail['wppericles_agence_wp_pericles_asp']                   = sanitize_text_field( strval( $bien->NO_ASP ) );
+		$detail['wppericles_agence_wppericles_code_societe']           = sanitize_text_field( strval( $bien->CODE_SOCIETE ) );
+		$detail['wppericles_agence_wppericles_code_site']              = sanitize_text_field( strval( $bien->CODE_SITE ) );
+		$detail['wppericles_agence_wppericles_dossier']                = sanitize_text_field( strval( $bien->NO_DOSSIER ) );
+		$detail['wppericles_bien_wppericles_type_mandat']              = sanitize_text_field( strval( $bien->TYPE_MANDAT ) );
+		$detail['wppericles_bien_wppericles_honoraires']               = sanitize_text_field( strval( $bien->HONORAIRES ) );
+		$detail['wppericles_bien_wppericles_travaux']                  = sanitize_text_field( strval( $bien->TRAVAUX ) );
+		$detail['wppericles_bien_wppericles_charges']                  = sanitize_text_field( strval( $bien->CHARGES ) );
+		$detail['wppericles_bien_wppericles_depot_garantie']           = sanitize_text_field( strval( $bien->DEPOT_GARANTIE ) );
+		$detail['wppericles_bien_wppericles_taxe_habitation']          = sanitize_text_field( strval( $bien->TAXE_HABITATION ) );
+		$detail['wppericles_bien_date_disponibilite']                  = sanitize_text_field( strval( $bien->DATE_DISPO ) );
+		$detail['wppericles_bien_wppericles_taxe_fonciere']            = sanitize_text_field( strval( $bien->TAXE_FONCIERE ) );
+		$detail['wppericles_internet_wppericles_code_postal_internet'] = sanitize_text_field( strval( $bien->CP_INTERNET ) );
+		$detail['wppericles_internet_wppericles_ville_internet']       = sanitize_text_field( strval( $bien->VILLE_INTERNET ) );
+		$detail['wppericles_pratique_wppericles_quartier']             = sanitize_text_field( strval( $bien->QUARTIER ) );
+		$detail['wppericles_pratique_wppericles_residence']            = sanitize_text_field( strval( $bien->RESIDENCE ) );
+		$detail['wppericles_pratique_wppericles_transport']            = sanitize_text_field( strval( $bien->TRANSPORT ) );
+		$detail['wppericles_pratique_wppericles_proximite']            = sanitize_text_field( strval( $bien->PROXIMITE ) );
+		$detail['wppericles_pratique_wppericles_secteur']              = sanitize_text_field( strval( $bien->SECTEUR ) );
+		$detail['wppericles_interieur_wppericles_nb_pieces']           = sanitize_text_field( strval( $bien->NB_PIECES ) );
+		$detail['wppericles_interieur_wppericles_surface_carrez']      = sanitize_text_field( strval( $bien->SURF_CARREZ ) );
+		$detail['wppericles_interieur_wppericles_surface_sejour']      = sanitize_text_field( strval( $bien->SURF_SEJOUR ) );
+		$detail['wppericles_pratique_wppericles_etage']                = sanitize_text_field( strval( $bien->ETAGE ) );
+		$detail['wppericles_pratique_wppericles_code_etage']           = sanitize_text_field( strval( $bien->CODE_ETAGE ) );
+		$detail['wppericles_interieur_wppericles_nb_etages']           = sanitize_text_field( strval( $bien->NB_ETAGE ) );
+		$detail['wppericles_interieur_wppericles_cuisine']             = sanitize_text_field( strval( $bien->CUISINE ) );
+		$detail['wppericles_interieur_wppericles_nb_wc']               = sanitize_text_field( strval( $bien->NB_WC ) );
+		$detail['wppericles_annexes_wppericles_nb_parking_interieur']  = sanitize_text_field( strval( $bien->NB_PARK_INT ) );
+		$detail['wppericles_annexes_wppericles_nb_parking_exterieur']  = sanitize_text_field( strval( $bien->NB_PARK_EXT ) );
+		$detail['wppericles_annexes_wppericles_nb_garage_box']         = sanitize_text_field( strval( $bien->GARAGE_BOX ) );
+		$detail['wppericles_annexes_wppericles_sous-sol']              = sanitize_text_field( strval( $bien->SOUS_SOL ) );
+		$detail['wppericles_annexes_wppericles_nb_caves']              = sanitize_text_field( strval( $bien->NB_CAVES ) );
+		$detail['wppericles_pratique_wppericles_type_chauffage']       = sanitize_text_field( strval( $bien->TYPE_CHAUFF ) );
+		$detail['wppericles_agence_wppericles_code_client']            = sanitize_text_field( strval( $bien->CODE_CLIENT ) );
+		$detail['wppericles_agence_wppericles_type_offre']             = sanitize_text_field( strval( $bien->TYPE_OFFRE ) );
+		$detail['wppericles_pratique_wppericles_ascenseur']            = sanitize_text_field( strval( $bien->ASCENSEUR ) );
+		$detail['wppericles_exterieur_wppericles_balcon']              = sanitize_text_field( strval( $bien->BALCON ) );
+		$detail['wppericles_exterieur_wppericles_piscine']             = sanitize_text_field( strval( $bien->PISCINE ) );
+		$detail['wppericles_pratique_wppericles_acces_handicape']      = sanitize_text_field( strval( $bien->ACCES_HANDI ) );
+		$detail['wppericles_internet_wppericles_texte_mailing']        = sanitize_text_field( strval( $bien->TEXTE_MAILING ) );
+		$detail['divers_wppericles_mur_mitoyens']                      = sanitize_text_field( strval( $bien->MUR_MITOYENS ) );
+		$detail['wppericles_exterieur_wppericles_facade_terrain']      = sanitize_text_field( strval( $bien->FACADE_TERRAIN ) );
+		$detail['wppericles_agence_wppericles_adresse_2_agence']       = sanitize_text_field( strval( $bien->ADRESSE2_AGENCE ) );
+		$detail['wppericles_internet_wppericles_url_visite']           = sanitize_text_field( strval( $bien->URL_VISITE ) );
+		$detail['wppericles_pratique_wppericles_immeuble_prestige']    = sanitize_text_field( strval( $bien->PRESTIGE ) );
+		$detail['wppericles_exterieur_wppericles_info_terrasse']       = sanitize_text_field( strval( $bien->INFO_TERRASSE ) );
+		$detail['wppericles_exterieur_wppericles_info_balcon']         = sanitize_text_field( strval( $bien->INFO_BALCON ) );
+		$detail['wppericles_bien_wppericles_dispo']                    = sanitize_text_field( strval( $bien->DISPO ) );
+		$detail['wppericles_bien_wppericles_loyer2']                   = sanitize_text_field( strval( $bien->LOYER2 ) );
+		$detail['wppericles_bien_wppericles_date_libre']               = sanitize_text_field( strval( $bien->DATE_LIBRE ) );
+		$detail['wppericles_bien_wppericles_net_vendeur']              = sanitize_text_field( strval( $bien->NET_VENDEUR ) );
+		$detail['wppericles_bien_wppericles_hono_acq']                 = sanitize_text_field( strval( $bien->HONO_ACQ ) );
+		$detail['wppericles_exterieur_wppericles_surface_jardin']      = sanitize_text_field( strval( $bien->SURF_JARDIN ) );
+		$detail['divers_wppericles_cos']                               = sanitize_text_field( strval( $bien->COS ) );
+		$detail['divers_wppericles_shon']                              = sanitize_text_field( strval( $bien->SHON ) );
+		$detail['wppericles_adresse_info_kms']                         = sanitize_text_field( strval( $bien->INFO_KM ) );
+		$detail['wppericles_pratique_wppericles_info_contact']         = sanitize_text_field( strval( $bien->INFO_CONTACT ) );
+		$detail['wppericles_pratique_wppericles_contact']              = sanitize_text_field( strval( $bien->CONTACT ) );
+		$detail['wppericles_interieur_wppericles_nb_niveau']           = sanitize_text_t_field( strval( $bien->INFO_CONTACT ) );
+		$detail['wppericles_pro_wppericles_cession_droit_au_bail']     = sanitize_text_field( strval( $bien->CESSIONDROITAUBAIL ) );
+		$detail['wppericles_pro_wppericles_longueur_vitrine']          = sanitize_text_field( strval( $bien->LONGUEURVITRINE ) );
+		$detail['divers_wppericles_interphone']                        = sanitize_text_field( strval( $bien->INTERPHONE ) );
+		$detail['wppericles_pro_wppericles_montecharge']               = sanitize_text_field( strval( $bien->MONTECHARGE ) );
+		$detail['wppericles_pratique_wppericles_immeuble_independant'] = sanitize_text_field( strval( $bien->IMMEUBLEINDEPENDANT ) );
+		$detail['wppericles_pratique_wppericles_immeuble_collectif']   = sanitize_text_field( strval( $bien->IMMEUBLECOLLECTIF ) );
+		$detail['wppericles_pratique_wppericles_immeuble_prestige']    = sanitize_text_field( strval( $bien->IMMEUBLEPRESTIGE ) );
+		$detail['wppericles_pratique_wppericles_digicode']             = sanitize_text_field( strval( $bien->DIGICODE ) );
+		$detail['wppericles_interieur_wppericles_climatisation']       = sanitize_text_field( strval( $bien->CLIMATISATION ) );
+		$detail['divers_wppericles_gardiennage']                       = sanitize_text_field( strval( $bien->GARDIENNAGE ) );
+		$detail['wppericles_pro_wppericles_surface_professionnelle']   = sanitize_text_field( strval( $bien->SURFACEPROFESSIONNELLE ) );
+		$detail['wppericles_pro_wppericles_surface_annexe']            = sanitize_text_field( strval( $bien->SURFACEANNEXE ) );
+		$detail['wppericles_pro_wppericles_surface_logement']          = sanitize_text_field( strval( $bien->SURFACELOGEMENT ) );
+		$detail['wppericles_bien_wppericles_asp_lot']                  = sanitize_text_field( strval( $bien->NO_ASP_LOT ) );
+		$detail['wppericles_bien_wppericles_viager']                   = sanitize_text_field( strval( $bien->VIAGER ) );
+		$detail['divers_wppericles_non_assujetti_dpe']                 = sanitize_text_field( strval( $bien->NON_ASSUJETTI_DPE ) );
+		$detail['divers_wppericles_dpe_vierge']                        = sanitize_text_field( strval( $bien->DPE_VIERGE ) );
+		$detail['wppericles_bien_wppericles_taux_honoraires']          = sanitize_text_field( strval( $bien->TAUX_HONORAIRES ) );
+		$detail['wppericles_bien_wppericles_copropriete']              = sanitize_text_field( strval( $bien->COPROPRIETE ) );
+		$detail['wppericles_bien_wppericles_nb_de_lot_copropriete']    = sanitize_text_field( strval( $bien->NB_LOTS_COPROPRIETE ) );
+		$detail['wppericles_bien_wppericles_montant_quote_part']       = sanitize_text_field( strval( $bien->MONTANT_QUOTE_PART ) );
+		$detail['wppericles_bien_wppericles_procedure_syndicat']       = sanitize_text_field( strval( $bien->PROCEDURE_SYNDICAT ) );
+		$detail['wppericles_bien_wppericles_detail_procedure']         = sanitize_text_field( strval( $bien->DETAIL_PROCEDURE ) );
+		$detail['wppericles_bien_wppericles_coup_de_coeur']            = sanitize_text_field( strval( $bien->COUP_DE_COEUR ) );
+		$detail['wppericles_bien_wppericles_repartition_acq']          = sanitize_text_field( strval( $bien->REPARTITION_ACQ ) );
+		$detail['wppericles_prix_nature_charges']                      = sanitize_text_field( strval( $bien->NATURE_CHARGES ) );
+		$detail['wppericles_prix_montant_charges']                     = sanitize_text_field( strval( $bien->MONTANT_CHARGES ) );
+		$detail['wppericles_prix_complement_loyer']                    = sanitize_text_field( strval( $bien->COMPLEMENT_LOYER ) );
+		$detail['wppericles_prix_honoraires_etat_lieux_ttc']           = sanitize_text_field( strval( $bien->HONO_ETAT_LIEUX_TTC ) );
+
+		return apply_filters_ref_array( 'wppericles_import_details_bien', $detail );
 	}
 
 	/**
