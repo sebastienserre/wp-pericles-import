@@ -28,6 +28,7 @@ use function update_post_meta;
 use function var_dump;
 use function wp_check_filetype;
 use function wp_delete_file;
+use function wp_get_attachment_url;
 use function wp_insert_attachment;
 use function wp_insert_post;
 use function wp_insert_term;
@@ -150,29 +151,32 @@ class Import {
 		 * Search in listings if property exists in xml
 		 * if not => draft
 		 */
+
+		$asp = [];
 		foreach ( $listings as $listing ) {
-			$listing_ID = get_post_meta( $listing->ID, 'wppericles_bien_wppericles_mandat' );
+			$listing_asp = get_post_meta( $listing->ID, 'wppericles_agence_wp_pericles_asp' );
 			$xml        = new XMLReader();
 			$xml_file   = WP_PERICLES_IMPORT_TMP . $this->name;
 			$xml->open( $xml_file );
 			$xml->read();
-			$mandat = [];
+
 
 			$element = new SimpleXMLElement( $xml->readOuterXml() );
 			foreach ( $element->BIEN as $bien ) {
 
-				if ( strval( $bien->NO_MANDAT ) === $listing_ID[0] ) {
-					array_push( $mandat, $listing->ID );
+				$asp_bien = strval( $bien->NO_ASP );
+				if ( $asp_bien === $listing_asp[0] ) {
+					array_push( $asp, $listing->ID );
 				}
 			}
+			/*
+			$postarr = array(
+				'ID'          => $listing->ID,
+				'post_status' => 'draft',
+			);
+			wp_update_post( $postarr );
+			*/
 
-			if ( empty( $mandat ) ) {
-				$postarr = array(
-					'ID'          => $listing->ID,
-					'post_status' => 'draft',
-				);
-				wp_update_post( $postarr );
-			}
 		}
 		$this->read_xml();
 		error_log( 'end check' );
@@ -196,8 +200,8 @@ class Import {
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
-						'key'     => 'wppericles_bien_wppericles_mandat',
-						'value'   => strval( $bien->NO_MANDAT ),
+						'key'     => 'wppericles_agence_wp_pericles_asp',
+						'value'   => strval( $bien->NO_ASP ),
 						'compare' => '=',
 					),
 				),
@@ -288,6 +292,7 @@ class Import {
 			 * Créer la galerie
 			 */
 			delete_post_meta( $insert, 'wppericles_image' );
+			$imgs = [];
 			foreach ( $alphabet as $letter ) {
 				$societe = strval( $bien->CODE_SOCIETE );
 				$site    = strval( $bien->CODE_SITE );
@@ -321,17 +326,21 @@ class Import {
 						set_post_thumbnail( $insert, $attachment_id );
 					}
 
-					/**
-					 * Ajout des images dans la galerie
-					 */
 					if ( 'a' !== $letter ) {
-						// Add current images to array
-						$image_url                      = wp_get_attachment_url( $attachment_id );
-						$images_array[ $attachment_id ] = $image_url;
-						update_field( 'wppericles_image', $attachment_id, $insert );
+						array_push( $imgs, $attachment_id );
 					}
 
 				}
+			}
+
+			/**
+			 * Ajout des images dans la galerie
+			 */
+			if ( 'a' !== $letter ) {
+				// Add current images to array
+				$image_url                      = wp_get_attachment_url( $attachment_id );
+				$images_array[ $attachment_id ] = $image_url;
+				update_field( 'wppericles_image', $imgs, $insert );
 			}
 			unset( $images_array );
 		}
