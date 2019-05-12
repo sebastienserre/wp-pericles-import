@@ -5,6 +5,7 @@ namespace WP_PERICLES\IMPORT;
 use function __return_false;
 use function add_action;
 use function apply_filters_ref_array;
+use function array_filter;
 use function array_push;
 use function basename;
 use function date;
@@ -12,11 +13,14 @@ use function delete_post_meta;
 use function error_log;
 use function explode;
 use function file_exists;
+use function get_field;
 use function get_post_meta;
 use function get_term_by;
 use function has_post_thumbnail;
+use function implode;
 use function intval;
 use function sanitize_text_field;
+use function sanitize_title;
 use SimpleXMLElement;
 use function strtotime;
 use function strval;
@@ -58,6 +62,7 @@ class Import {
 		$this->name    = $this->get_name();
 
 	}
+
 
 	/**
 	 * @return string
@@ -212,26 +217,21 @@ class Import {
 			/**
 			 * Get Authors ID
 			 */
-			$author  = 'Madani';
-			$authors = get_users( array( 'search' => $author ) );
+			$author = get_field( 'wppericles_utilisateur_importateur', 'option' );
 
 			/**
 			 * Get Situation Term ID
 			 */
-			$situation = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
-			$situation = get_term_by( 'name', $situation, 'location_tax' );
-			if ( ! $situation ){
-				wp_insert_term( $situation, 'location_tax' );
-				$situation = get_term_by( 'name', $situation, 'location_tax' );
+			$situation_name = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
+			$situation = get_term_by( 'name', $situation_name, 'location_tax' );
+
+			if ( ! $situation ) {
+				$insert_term = wp_insert_term( $situation_name, 'location_tax' );
+				$situation   = get_term_by( 'name', $situation_name, 'location_tax' );
 			}
 
 			error_log( $listing_id . ' ' . $situation->term_id );
-			/**
-			 * @TODO Trouver une solution si plusieurs auteur... pas sur que ca arrive!
-			 */
-			foreach ( $authors as $author ) {
-				$author_id[] = $author->ID;
-			}
+
 
 			$detail = $this->format_postmeta( $bien );
 
@@ -240,24 +240,30 @@ class Import {
 			 */
 
 			$post_date           = explode( '/', $bien->DATE_OFFRE );
-			$detail['post_date'] = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
+			$post_date = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
 
 
 			$post_modified           = explode( '/', $bien->DATE_MODIF );
-			$detail['post_modified'] = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
+			$post_modified = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
 
-			$title   = sanitize_text_field( strval( $bien->CATEGORIE ) . ' - ' . strval( $bien->VILLE_OFFRE ) . ' - ' . strval( $bien->NO_MANDAT ) );
+			$args_title = [
+				sanitize_text_field( strval( $bien->CATEGORIE ) ),
+				sanitize_text_field( strval( $bien->VILLE_OFFRE ) ),
+				sanitize_text_field( strval( $bien->NO_MANDAT ) ),
+
+			];
+
+			$title = implode( ' - ', array_filter( $args_title ) );
 			$content = sanitize_text_field( strval( $bien->TEXTE_FR ) );
-			$slug         = sanitize_text_field( strval( $bien->CATEGORIE ) . '-' . strval( $bien->VILLE_OFFRE ) . '-' . strval( $bien->NO_MANDAT ) );
-
+			$slug = sanitize_title( $title );
 
 			$postarr = array(
 				'ID'             => $listing_id,
-				'post_author'    => $author_id[0],
+				'post_author'    => $author->ID,
 				'post_content'   => $content,
 				'post_title'     => $title,
 				'post_status'    => 'publish',
-				'post_type'      => 'listing',
+				'post_type'      => 'real-estate-property',
 				'comment_status' => 'closed',
 				'ping_status'    => 'closed',
 				'post_date'      => $post_date,
@@ -267,9 +273,6 @@ class Import {
 			);
 			$insert  = wp_insert_post( $postarr );
 
-			/**
-			 * @todo insert Taxo
-			 */
 			$cat = wp_set_post_terms( $insert, sanitize_text_field( strval( $bien->CATEGORIE ) ), 'property_types', true );
 			$loc = wp_set_post_terms( $insert, $situation->term_id, 'location_tax', true );
 
@@ -284,10 +287,11 @@ class Import {
 			/**
 			 * Créer la galerie
 			 */
-			delete_post_meta( $insert, '_gallery' );
+			delete_post_meta( $insert, 'wppericles_image' );
 			foreach ( $alphabet as $letter ) {
 				$societe = strval( $bien->CODE_SOCIETE );
 				$site    = strval( $bien->CODE_SITE );
+				$asp = get_field( 'wppericles_agence_wp_pericles_asp', $insert );
 				$img     = WP_PERICLES_IMPORT_IMG . $societe . '-' . $site . '-' . $asp . '-' . $letter . '.jpg';
 				if ( file_exists( $img ) ) {
 
@@ -324,7 +328,7 @@ class Import {
 						// Add current images to array
 						$image_url                      = wp_get_attachment_url( $attachment_id );
 						$images_array[ $attachment_id ] = $image_url;
-						update_post_meta( $insert, '_gallery', $images_array );
+						update_field( 'wppericles_image', $attachment_id, $insert );
 					}
 
 				}
@@ -434,7 +438,7 @@ class Import {
 		$detail['wppericles_adresse_info_kms']                         = sanitize_text_field( strval( $bien->INFO_KM ) );
 		$detail['wppericles_pratique_wppericles_info_contact']         = sanitize_text_field( strval( $bien->INFO_CONTACT ) );
 		$detail['wppericles_pratique_wppericles_contact']              = sanitize_text_field( strval( $bien->CONTACT ) );
-		$detail['wppericles_interieur_wppericles_nb_niveau']           = sanitize_text_t_field( strval( $bien->INFO_CONTACT ) );
+		$detail['wppericles_interieur_wppericles_nb_niveau']           = sanitize_text_field( strval( $bien->INFO_CONTACT ) );
 		$detail['wppericles_pro_wppericles_cession_droit_au_bail']     = sanitize_text_field( strval( $bien->CESSIONDROITAUBAIL ) );
 		$detail['wppericles_pro_wppericles_longueur_vitrine']          = sanitize_text_field( strval( $bien->LONGUEURVITRINE ) );
 		$detail['divers_wppericles_interphone']                        = sanitize_text_field( strval( $bien->INTERPHONE ) );
@@ -465,7 +469,7 @@ class Import {
 		$detail['wppericles_prix_complement_loyer']                    = sanitize_text_field( strval( $bien->COMPLEMENT_LOYER ) );
 		$detail['wppericles_prix_honoraires_etat_lieux_ttc']           = sanitize_text_field( strval( $bien->HONO_ETAT_LIEUX_TTC ) );
 
-		return apply_filters_ref_array( 'wppericles_import_details_bien', $detail );
+		return $detail;
 	}
 
 	/**
