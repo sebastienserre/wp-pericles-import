@@ -1,4 +1,15 @@
-# WP Pericles Import  
+=== WP Pericles Import ===
+Plugin Name: WP Pericles Import
+Plugin URI: https://www.thivinfo.com
+Contributors: sebastienserre
+Tags: Real Estate, Pericles
+Requires at least: 4.6
+Requires PHP: 5.6
+Tested up to: 5.2
+Stable tag: 1.0.0
+License: GPL V2 or later
+
+# WP Pericles Import
 ## Introduction  
 Cette extension WordPress a été créée suite à mon tutoriel [Exporter des biens immobilers de Péricles 5  vers WordPress.](https://thivinfo.com/blog/tutoriels/exporter-des-biens-immobiliers-de-pericles-5-vers-wordpress)  
 Suite à plusieurs demandes, j'ai créé cette extension qui va synchroniser via une tache planifié les biens entre Péricles et WordPress.  
