@@ -54,7 +54,8 @@ class Import {
 	protected $name;
 
 	public function __construct() {
-		add_action( 'wp_pericles_cron', array( $this, 'extract_photo' ) );
+		add_action( 'wppericles_hourly_cron', array( $this, 'extract_photo' ) );
+
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
 			add_action( 'admin_init', array( $this, 'extract_photo' ) );
 		}
@@ -155,8 +156,8 @@ class Import {
 		$asp = [];
 		foreach ( $listings as $listing ) {
 			$listing_asp = get_post_meta( $listing->ID, 'wppericles_agence_wp_pericles_asp' );
-			$xml        = new XMLReader();
-			$xml_file   = WP_PERICLES_IMPORT_TMP . $this->name;
+			$xml         = new XMLReader();
+			$xml_file    = WP_PERICLES_IMPORT_TMP . $this->name;
 			$xml->open( $xml_file );
 			$xml->read();
 
@@ -227,7 +228,7 @@ class Import {
 			 * Get Situation Term ID
 			 */
 			$situation_name = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
-			$situation = get_term_by( 'name', $situation_name, 'location_tax' );
+			$situation      = get_term_by( 'name', $situation_name, 'location_tax' );
 
 			if ( ! $situation ) {
 				$insert_term = wp_insert_term( $situation_name, 'location_tax' );
@@ -243,11 +244,11 @@ class Import {
 			 * format date
 			 */
 
-			$post_date           = explode( '/', $bien->DATE_OFFRE );
+			$post_date = explode( '/', $bien->DATE_OFFRE );
 			$post_date = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
 
 
-			$post_modified           = explode( '/', $bien->DATE_MODIF );
+			$post_modified = explode( '/', $bien->DATE_MODIF );
 			$post_modified = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
 
 			$args_title = [
@@ -257,9 +258,9 @@ class Import {
 
 			];
 
-			$title = implode( ' - ', array_filter( $args_title ) );
+			$title   = implode( ' - ', array_filter( $args_title ) );
 			$content = sanitize_text_field( strval( $bien->TEXTE_FR ) );
-			$slug = sanitize_title( $title );
+			$slug    = sanitize_title( $title );
 
 			$postarr = array(
 				'ID'             => $listing_id,
@@ -296,7 +297,7 @@ class Import {
 			foreach ( $alphabet as $letter ) {
 				$societe = strval( $bien->CODE_SOCIETE );
 				$site    = strval( $bien->CODE_SITE );
-				$asp = get_field( 'wppericles_agence_wp_pericles_asp', $insert );
+				$asp     = get_field( 'wppericles_agence_wp_pericles_asp', $insert );
 				$img     = WP_PERICLES_IMPORT_IMG . $societe . '-' . $site . '-' . $asp . '-' . $letter . '.jpg';
 				if ( file_exists( $img ) ) {
 

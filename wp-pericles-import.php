@@ -2,7 +2,7 @@
 /*
 	Plugin Name: WP Pericles Import
 	Plugin URI: https://www.thivinfo.com
-	Description:
+	Description: Connect your Real Estate Agency to WordPress!
 	Author: Sébastien SERRE
 	Author URI: https://thivinfo.com
 	Version: 1.0.0
@@ -11,6 +11,7 @@
 	*/
 
 namespace WPPERICLES;
+
 
 use function add_action;
 use function class_exists;
@@ -21,9 +22,14 @@ use function plugin_basename;
 use function plugin_dir_path;
 use function plugin_dir_url;
 use function register_activation_hook;
+use function register_deactivation_hook;
+use function time;
 use function untrailingslashit;
+use function wp_clear_scheduled_hook;
 use function wp_get_upload_dir;
+use function wp_next_scheduled;
 use const WP_PERICLES_ACF_PATH;
+use function wp_schedule_event;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -36,13 +42,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPPericles {
 
 	public function __construct() {
-		register_activation_hook( __FILE__, array( $this, 'activation' ) );
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
 		add_action( 'plugins_loaded', array( $this, 'load_files' ), 20 );
 
-		add_filter( 'cron_schedules', array( $this, 'create_schedule' ) );
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
+
+		register_activation_hook( __FILE__, [ $this, 'activation' ] );
+		register_deactivation_hook( __FILE__, [ $this, 'deactivation'] );
+
 	}
 
 	public function define_constants() {
@@ -69,10 +77,14 @@ class WPPericles {
 
 	public function activation() {
 		$this->create_folders();
-		$this->create_cron();
-		add_action( 'init', [ $this, 'create_cpt' ], 990 );
+		if (! wp_next_scheduled ( 'wppericles_hourly_cron' )) {
+			$cron = wp_schedule_event( time(), 'hourly', 'wppericles_hourly_cron' );
+		}
 
+	}
 
+	public function deactivation() {
+		wp_clear_scheduled_hook( 'wppericles_cron' );
 	}
 
 	public function create_cpt(){
@@ -113,26 +125,6 @@ class WPPericles {
 			mkdir( $path['basedir'] . '/import/img', 0777, true );
 		}
 
-	}
-
-	public function create_cron() {
-		if ( ! wp_next_scheduled( 'wp_pericles_cron' ) ) {
-			wp_schedule_event( time(), 'quarter_hour', 'wp_pericles_cron' );
-		}
-	}
-
-	/**
-	 * @param $schedules
-	 *
-	 * @return mixed
-	 */
-	public function create_schedule( $schedules ) {
-		$schedules['quarter_hour'] = array(
-			'interval' => 900,
-			'display'  => __( 'Every 15 minutes', 'wp-pericles-import' ),
-		);
-
-		return $schedules;
 	}
 
 	/**
