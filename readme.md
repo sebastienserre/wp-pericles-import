@@ -14,6 +14,13 @@ Vous pouvez renommer le slug du CPT créé via les réglages de l'extension. Il 
 Il y a des hooks d'actions et de filtres un peu partout dans l'extension afin de permettre aux développeurs d'étendre les fonctionnalités de cette extension.  
 S'il vous en manque, n'hésitez pas à me [contacter par mail](mailto:support@thivinfo.com)
 
+## Mise en place  
+Dans un premier temps, il faut que Péricles exporte les données vers votre serveur Web.  
+* Pour cela, créer un accès FTP dédié pointant vers le répertoire ```/wp-content/uploads/import```. C'est ici que Péricles doit déposer son fichier zip contenant les photos des biens ainsi que le fichier xml contenant les caractéristiques des biens.  
+* Suivez la 1ère partie de mon tutoriel sur le paramétrage de Péricles 5.  
+* Renseignez les réglages de WP Pericles Import le non du fichier zip.
+* Attendez que le Cron passe... vos biens s'importent...
+
 ## Disclaimer  
 Cette extension embarque ACF Pro 5.8.0 afin de faciliter la gestion des champs additionnels.  
 Vous pouvez donc créer vos templates en utilisant les fonctions d'ACF ( get_field(), the_field()... )
