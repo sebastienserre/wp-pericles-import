@@ -35,6 +35,49 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly.
 
+if ( ! function_exists( 'wpi_fs' ) ) {
+	// Create a helper function for easy SDK access.
+	function wpi_fs() {
+		global $wpi_fs;
+
+		if ( ! isset( $wpi_fs ) ) {
+			// Include Freemius SDK.
+			require_once dirname( __FILE__ ) . '/freemius/start.php';
+
+			$wpi_fs = fs_dynamic_init( array(
+				'id'               => '3794',
+				'slug'             => 'wp-pericles-import',
+				'type'             => 'plugin',
+				'public_key'       => 'pk_b9019383dae04d104205b2de99d6c',
+				'is_premium'       => true,
+				'is_premium_only'  => true,
+				'has_addons'       => false,
+				'has_paid_plans'   => true,
+				'is_org_compliant' => false,
+				'trial'            => array(
+					'days'               => 30,
+					'is_require_payment' => false,
+				),
+				'menu'             => array(
+					'slug'    => 'pericles-import-settings',
+					'support' => false,
+				),
+				// Set the SDK to work in a sandbox mode (for development & testing).
+				// IMPORTANT: MAKE SURE TO REMOVE SECRET KEY BEFORE DEPLOYMENT.
+				'secret_key'       => 'sk_W]fiYg098e?MANn~iIml0b0x^2L7<',
+			) );
+		}
+
+		return $wpi_fs;
+	}
+
+	// Init Freemius.
+	wpi_fs();
+	// Signal that SDK was initiated.
+	do_action( 'wpi_fs_loaded' );
+}
+
+
 /**
  * Class WPPericles
  * @package WPPERICLES
@@ -49,7 +92,7 @@ class WPPericles {
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 
 		register_activation_hook( __FILE__, [ $this, 'activation' ] );
-		register_deactivation_hook( __FILE__, [ $this, 'deactivation'] );
+		register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
 
 	}
 
@@ -77,7 +120,7 @@ class WPPericles {
 
 	public function activation() {
 		$this->create_folders();
-		if (! wp_next_scheduled ( 'wppericles_hourly_cron' )) {
+		if ( ! wp_next_scheduled( 'wppericles_hourly_cron' ) ) {
 			$cron = wp_schedule_event( time(), 'hourly', 'wppericles_hourly_cron' );
 		}
 
@@ -87,7 +130,7 @@ class WPPericles {
 		wp_clear_scheduled_hook( 'wppericles_cron' );
 	}
 
-	public function create_cpt(){
+	public function create_cpt() {
 		create_cpt();
 		flush_rewrite_rules();
 	}
