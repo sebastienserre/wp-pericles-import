@@ -21,6 +21,10 @@ Dans un premier temps, il faut que Péricles exporte les données vers votre ser
 * Renseignez les réglages de WP Pericles Import le non du fichier zip.
 * Attendez que le Cron passe... vos biens s'importent...
 
+## WP-Cli  
+Si vous avez beaucoup de biens Immobiliers, il se peut que le cron de WordPress subisse des arrêts du a des temps d'exécution trop long.  
+Pour contrer cela, un commande WP-CLI est disponible: `wp wp_pericles_import` 
+
 ## Disclaimer  
 Cette extension embarque ACF Pro 5.8.0 afin de faciliter la gestion des champs additionnels.  
 Vous pouvez donc créer vos templates en utilisant les fonctions d'ACF ( get_field(), the_field()... )
