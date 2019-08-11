@@ -2545,9 +2545,9 @@
     "location": [
         [
             {
-                "param": "post_type",
+                "param": "options_page",
                 "operator": "==",
-                "value": "real-estate-property"
+                "value": "pericles-import-settings"
             }
         ]
     ],
@@ -2559,5 +2559,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1557568432
+    "modified": 1565458409
 }
