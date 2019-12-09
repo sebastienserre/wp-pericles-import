@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly.
+
 if( function_exists('acf_add_local_field_group') ):
 
 	acf_add_local_field_group(array(
@@ -2551,9 +2552,9 @@ if( function_exists('acf_add_local_field_group') ):
 		'location' => array(
 			array(
 				array(
-					'param' => 'post_type',
+					'param' => 'options_page',
 					'operator' => '==',
-					'value' => 'real-estate-property',
+					'value' => 'listing-settings',
 				),
 			),
 		),

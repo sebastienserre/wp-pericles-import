@@ -52,16 +52,19 @@ class Import {
 
 	protected $zipname;
 	protected $name;
+	protected $cpt;
 
 	public function __construct() {
 		add_action( 'wppericles_hourly_cron', array( $this, 'extract_photo' ) );
 
+		$this->zipname = $this->get_zipname();
+		$this->name    = $this->get_name();
+		$this->cpt = $this->get_cpt();
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
 			add_action( 'admin_init', array( $this, 'extract_photo' ) );
 		}
 
-		$this->zipname = $this->get_zipname();
-		$this->name    = $this->get_name();
+
 
 	}
 
@@ -97,6 +100,21 @@ class Import {
 	 */
 	public function get_name() {
 		return $this->set_name();
+	}
+
+	public function get_cpt() {
+		return $this->set_cpt();
+	}
+
+	public function set_cpt() {
+		$create = get_field( 'wppericles_create_cpt', 'option' );
+		if ( $create ){
+			$cpt =  get_field( 'wppericles_cpt_slug', 'option' );
+		} else {
+			$cpt =  get_field( 'wppericles_existing_cpt', 'option' );
+		}
+
+		return $cpt;
 	}
 
 	public function extract_photo() {
@@ -142,7 +160,7 @@ class Import {
 		 * Retrieve listing
 		 */
 		$args     = array(
-			'post_type'      => apply_filters( 'wp_pericles_post_type', 'real-estate-property' ),
+			'post_type'      => $this->cpt,
 			'post_status'    => 'publish',
 			'posts_per_page' => - 1,
 		);
@@ -170,13 +188,6 @@ class Import {
 					array_push( $asp, $listing->ID );
 				}
 			}
-			/*
-			$postarr = array(
-				'ID'          => $listing->ID,
-				'post_status' => 'draft',
-			);
-			wp_update_post( $postarr );
-			*/
 
 		}
 		$this->read_xml();
@@ -197,7 +208,7 @@ class Import {
 		$wp_upload_dir = wp_upload_dir();
 		foreach ( $element->BIEN as $bien ) {
 			$args    = array(
-				'post_type'  => apply_filters( 'wp_pericles_post_type', 'real-estate-property' ),
+				'post_type'  => $this->cpt,
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
@@ -268,7 +279,7 @@ class Import {
 				'post_content'   => $content,
 				'post_title'     => $title,
 				'post_status'    => 'publish',
-				'post_type'      => 'real-estate-property',
+				'post_type'      => $this->cpt,
 				'comment_status' => 'closed',
 				'ping_status'    => 'closed',
 				'post_date'      => $post_date,

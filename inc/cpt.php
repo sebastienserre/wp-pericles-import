@@ -63,7 +63,10 @@ function create_cpt() {
 		'rewrite'             => $rewrite,
 		'show_in_rest'        => true,
 	);
-	register_post_type( 'real-estate-property', $args );
+	$cpt = get_field('wppericles_create_cpt', 'option');
+	if ( $cpt ) {
+		register_post_type( 'real-estate-property', $args );
+	}
 
 }
 

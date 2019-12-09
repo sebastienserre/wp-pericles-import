@@ -38,8 +38,4 @@ function location_tax() {
 			'show_in_rest'      => true,
 		);
 		register_taxonomy( 'location_tax', array( 'real-estate-property' ), $args );
-
-
 }
-
-

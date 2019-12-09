@@ -53,7 +53,26 @@
             "role": "",
             "allow_null": 0,
             "multiple": 0,
-            "return_format": "array"
+            "return_format": "object"
+        },
+        {
+            "key": "field_5d4edf4f8b75b",
+            "label": "Créer un Type de contenu dédié?",
+            "name": "wppericles_create_cpt",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
         },
         {
             "key": "field_5cd857a64e3b9",
@@ -62,7 +81,15 @@
             "type": "text",
             "instructions": "Slug du type de contenu Immobilier à créer.\r\nVeuillez visiter la page des Permaliens pour activer la réécriture.\r\nhttps:\/\/example.com\/wp-admin\/options-permalink.php",
             "required": 0,
-            "conditional_logic": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_5d4edf4f8b75b",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
             "wrapper": {
                 "width": "",
                 "class": "",
@@ -73,6 +100,29 @@
             "prepend": "",
             "append": "",
             "maxlength": ""
+        },
+        {
+            "key": "field_5d4ee0439382c",
+            "label": "Utilisez un type de contenu existant",
+            "name": "wppericles_existing_cpt",
+            "type": "post_type_selector",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_5d4edf4f8b75b",
+                        "operator": "!=",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "select_type": 1
         }
     ],
     "location": [
@@ -92,5 +142,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1557682593
+    "modified": 1575650524
 }
