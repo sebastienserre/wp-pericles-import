@@ -2547,7 +2547,7 @@
             {
                 "param": "options_page",
                 "operator": "==",
-                "value": "pericles-import-settings"
+                "value": "listing-settings"
             }
         ]
     ],
@@ -2559,5 +2559,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1565458409
+    "modified": 1575886541
 }

@@ -61,7 +61,26 @@ Example: export.ZIP',
 				'role' => '',
 				'allow_null' => 0,
 				'multiple' => 0,
-				'return_format' => 'array',
+				'return_format' => 'object',
+			),
+			array(
+				'key' => 'field_5d4edf4f8b75b',
+				'label' => 'Créer un Type de contenu dédié?',
+				'name' => 'wppericles_create_cpt',
+				'type' => 'true_false',
+				'instructions' => '',
+				'required' => 0,
+				'conditional_logic' => 0,
+				'wrapper' => array(
+					'width' => '',
+					'class' => '',
+					'id' => '',
+				),
+				'message' => '',
+				'default_value' => 1,
+				'ui' => 1,
+				'ui_on_text' => '',
+				'ui_off_text' => '',
 			),
 			array(
 				'key' => 'field_5cd857a64e3b9',
@@ -72,7 +91,15 @@ Example: export.ZIP',
 Veuillez visiter la page des Permaliens pour activer la réécriture.
 https://example.com/wp-admin/options-permalink.php',
 				'required' => 0,
-				'conditional_logic' => 0,
+				'conditional_logic' => array(
+					array(
+						array(
+							'field' => 'field_5d4edf4f8b75b',
+							'operator' => '==',
+							'value' => '1',
+						),
+					),
+				),
 				'wrapper' => array(
 					'width' => '',
 					'class' => '',
@@ -83,6 +110,29 @@ https://example.com/wp-admin/options-permalink.php',
 				'prepend' => '',
 				'append' => '',
 				'maxlength' => '',
+			),
+			array(
+				'key' => 'field_5d4ee0439382c',
+				'label' => 'Utilisez un type de contenu existant',
+				'name' => 'wppericles_existing_cpt',
+				'type' => 'post_type_selector',
+				'instructions' => '',
+				'required' => 0,
+				'conditional_logic' => array(
+					array(
+						array(
+							'field' => 'field_5d4edf4f8b75b',
+							'operator' => '!=',
+							'value' => '1',
+						),
+					),
+				),
+				'wrapper' => array(
+					'width' => '',
+					'class' => '',
+					'id' => '',
+				),
+				'select_type' => 1,
 			),
 		),
 		'location' => array(
@@ -102,6 +152,7 @@ https://example.com/wp-admin/options-permalink.php',
 		'hide_on_screen' => '',
 		'active' => true,
 		'description' => '',
+		'modified' => 1565457890,
 	));
 
 endif;

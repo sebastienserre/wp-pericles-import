@@ -2,6 +2,7 @@
 
 namespace WP_PERICLES\Options;
 
+use function acf_add_options_page;
 use function add_action;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -22,6 +23,14 @@ class Options {
 				array(
 					'page_title' => __( 'Pericles Import Settings', 'wp-pericles-import' ),
 					'menu_slug'  => 'pericles-import-settings',
+					'capability' => 'edit_posts',
+					'redirect'   => false,
+				)
+			);
+			acf_add_options_page(
+				array(
+					'page_title' => __( 'Listings Settings', 'wp-pericles-import' ),
+					'menu_slug'  => 'listing-settings',
 					'capability' => 'edit_posts',
 					'redirect'   => false,
 				)
