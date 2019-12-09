@@ -4,6 +4,7 @@ namespace WP_PERICLES\IMPORT;
 
 use function __return_false;
 use function add_action;
+use function apply_filters;
 use function apply_filters_ref_array;
 use function array_filter;
 use function array_push;
@@ -63,9 +64,6 @@ class Import {
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
 			add_action( 'admin_init', array( $this, 'extract_photo' ) );
 		}
-
-
-
 	}
 
 
@@ -490,7 +488,11 @@ class Import {
 		$detail['wppericles_prix_complement_loyer']                    = sanitize_text_field( strval( $bien->COMPLEMENT_LOYER ) );
 		$detail['wppericles_prix_honoraires_etat_lieux_ttc']           = sanitize_text_field( strval( $bien->HONO_ETAT_LIEUX_TTC ) );
 
-		return $detail;
+		/**
+		 * Fire after data from XML has been retrieved and before property is saved.
+		 * You can easily match your own post meta with this filter
+		 */
+		return apply_filters( 'wppericles_listings_meta', $detail, $bien );
 	}
 
 	/**

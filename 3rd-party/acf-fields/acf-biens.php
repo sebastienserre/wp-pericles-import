@@ -2552,9 +2552,9 @@ if( function_exists('acf_add_local_field_group') ):
 		'location' => array(
 			array(
 				array(
-					'param' => 'options_page',
+					'param' => 'post_type',
 					'operator' => '==',
-					'value' => 'listing-settings',
+					'value' => 'real-estate-property',
 				),
 			),
 		),

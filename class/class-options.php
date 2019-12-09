@@ -27,14 +27,6 @@ class Options {
 					'redirect'   => false,
 				)
 			);
-			acf_add_options_page(
-				array(
-					'page_title' => __( 'Listings Settings', 'wp-pericles-import' ),
-					'menu_slug'  => 'listing-settings',
-					'capability' => 'edit_posts',
-					'redirect'   => false,
-				)
-			);
 		}
 	}
 }
