@@ -144,7 +144,7 @@ class WPPericles {
 		}
 
 	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
-	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
+//	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
 
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
@@ -152,6 +152,7 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/inc/location_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/property_type_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
+		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
 	}
 
 	public function my_register_fields() {
