@@ -129,43 +129,6 @@
             "ui_off_text": ""
         },
         {
-            "key": "field_5cd857a64e3b9",
-            "label": "Slug",
-            "name": "wppericles_cpt_slug",
-            "type": "text",
-            "instructions": "Slug du type de contenu Immobilier à créer.\r\nVeuillez visiter la page des Permaliens pour activer la réécriture.\r\nhttps:\/\/example.com\/wp-admin\/options-permalink.php",
-            "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_5d4edf4f8b75b",
-                        "operator": "==",
-                        "value": "1"
-                    },
-                    {
-                        "field": "field_5df091ff974cc",
-                        "operator": "!=",
-                        "value": "1"
-                    },
-                    {
-                        "field": "field_5df092c933060",
-                        "operator": "!=",
-                        "value": "1"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "default_value": "real-estate-property",
-            "placeholder": "",
-            "prepend": "",
-            "append": "",
-            "maxlength": ""
-        },
-        {
             "key": "field_5d4ee0439382c",
             "label": "Utilisez un type de contenu existant",
             "name": "wppericles_existing_cpt",
@@ -199,8 +162,8 @@
             "select_type": 1
         },
         {
-            "key": "field_5df0922b974cd",
-            "label": "List of Plugins and themes",
+            "key": "field_5df0caffcf03b",
+            "label": "Which Plugin or Theme do you use?",
             "name": "wppericles_list_external",
             "type": "select",
             "instructions": "",
@@ -208,8 +171,8 @@
             "conditional_logic": [
                 [
                     {
-                        "field": "field_5df091ff974cc",
-                        "operator": "==",
+                        "field": "field_5d4edf4f8b75b",
+                        "operator": "!=",
                         "value": "1"
                     },
                     {
@@ -218,8 +181,8 @@
                         "value": "1"
                     },
                     {
-                        "field": "field_5d4edf4f8b75b",
-                        "operator": "!=",
+                        "field": "field_5df091ff974cc",
+                        "operator": "==",
                         "value": "1"
                     }
                 ]
@@ -230,8 +193,7 @@
                 "id": ""
             },
             "choices": {
-                "wpresidence": "WP Residence",
-                "wpcasa": "WPCasa"
+                "estate_property": "WP Residence"
             },
             "default_value": [],
             "allow_null": 0,
@@ -259,5 +221,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1576047682
+    "modified": 1576071646
 }
