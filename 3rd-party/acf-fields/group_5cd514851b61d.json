@@ -2539,7 +2539,9 @@
             "max_width": "",
             "max_height": "",
             "max_size": "",
-            "mime_types": ""
+            "mime_types": "",
+            "return_format": "array",
+            "preview_size": "medium"
         }
     ],
     "location": [
@@ -2559,5 +2561,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1575898927
+    "modified": 1576163109
 }
