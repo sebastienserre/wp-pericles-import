@@ -202,6 +202,51 @@
             "return_format": "value",
             "ajax": 0,
             "placeholder": ""
+        },
+        {
+            "key": "field_5df390d90f1c6",
+            "label": "WP Residence",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_5df0caffcf03b",
+                        "operator": "==",
+                        "value": "estate_property"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5df392b38746d",
+            "label": "Fields",
+            "name": "wppericles_wp_residence_fields",
+            "type": "checkbox",
+            "instructions": "Check fields you want to create",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": [],
+            "allow_custom": 0,
+            "default_value": [],
+            "layout": "horizontal",
+            "toggle": 1,
+            "return_format": "label",
+            "save_custom": 0
         }
     ],
     "location": [
@@ -221,5 +266,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1576163118
+    "modified": 1576245856
 }

@@ -80,6 +80,7 @@ if ( ! function_exists( 'wpi_fs' ) ) {
 
 /**
  * Class WPPericles
+ *
  * @package WPPERICLES
  */
 class WPPericles {
@@ -88,7 +89,7 @@ class WPPericles {
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
 		add_action( 'plugins_loaded', array( $this, 'load_files' ), 20 );
-		add_action( 'acf/include_fields', [ $this, 'my_register_fields'] );
+		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 
@@ -142,9 +143,9 @@ class WPPericles {
 		if ( ! class_exists( 'ACF' ) ) {
 			include_once WP_PERICLES_ACF_PATH . 'acf.php';
 		}
-
-	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
-//	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
+		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
+		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
+		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
 
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
@@ -152,12 +153,12 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/inc/location_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/property_type_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
-		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
+
 	}
 
 	public function my_register_fields() {
 
-		include_once plugin_dir_path( __FILE__ ) .  '/3rd-party/acf-post-type-selector/post-type-selector-v5.php';
+		include_once plugin_dir_path( __FILE__ ) . '/3rd-party/acf-post-type-selector/post-type-selector-v5.php';
 
 	}
 

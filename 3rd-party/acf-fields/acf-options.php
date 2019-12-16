@@ -1,4 +1,7 @@
 <?php
+
+use WP_PERICLES\IMPORT\WPResidence\WPResidence;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly.
@@ -211,6 +214,51 @@ Example: export.ZIP',
 				'ajax'              => 0,
 				'placeholder'       => '',
 			),
+			array(
+				'key'               => 'field_5df390d90f1c6',
+				'label'             => 'WP Residence',
+				'name'              => '',
+				'type'              => 'tab',
+				'instructions'      => '',
+				'required'          => 0,
+				'conditional_logic' => array(
+					array(
+						array(
+							'field'    => 'field_5df0caffcf03b',
+							'operator' => '==',
+							'value'    => 'estate_property',
+						),
+					),
+				),
+				'wrapper'           => array(
+					'width' => '',
+					'class' => '',
+					'id'    => '',
+				),
+				'placement'         => 'top',
+				'endpoint'          => 0,
+			),
+			array(
+				'key'               => 'field_5df392b38746d',
+				'label'             => 'Fields',
+				'name'              => 'wppericles_wp_residence_fields',
+				'type'              => 'checkbox',
+				'instructions'      => 'Check fields you want to create',
+				'required'          => 0,
+				'conditional_logic' => 0,
+				'wrapper'           => array(
+					'width' => '',
+					'class' => '',
+					'id'    => '',
+				),
+				'choices'           => WPResidence::$fields,
+				'allow_custom'      => 0,
+				'default_value'     => array(),
+				'layout'            => 'horizontal',
+				'toggle'            => 1,
+				'return_format'     => 'label',
+				'save_custom'       => 0,
+			),
 		),
 		'location'              => array(
 			array(
@@ -229,7 +277,6 @@ Example: export.ZIP',
 		'hide_on_screen'        => '',
 		'active'                => true,
 		'description'           => '',
-		'modified'              => 1576071646,
 	) );
 
 endif;
