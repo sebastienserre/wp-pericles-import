@@ -14,6 +14,7 @@ namespace WPPERICLES;
 
 
 use function add_action;
+use function add_filter;
 use function class_exists;
 use function create_cpt;
 use function define;
@@ -94,6 +95,7 @@ class WPPericles {
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 		add_filter( 'acf/settings/l10n_textdomain', [ $this, 'acf_textdomain' ] );
+		add_filter( 'template_include', [ $this, 'load_template'] );
 
 		register_activation_hook( __FILE__, [ $this, 'activation' ] );
 		register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
@@ -203,6 +205,35 @@ class WPPericles {
 
 	public function acf_textdomain( $td ) {
 		return $td = 'wp-pericles-import';
+	}
+
+	public function load_template( $template ) {
+		// Post ID
+		$post_id = get_the_ID();
+		// For all other CPT
+		if ( get_post_type( $post_id ) != 'real-estate-property' ) {
+			return $template;
+		}
+
+		// Else use custom template
+		if ( is_single() ) {
+			return $this->get_template_hierarchy( 'single' );
+		}
+	}
+
+	public function get_template_hierarchy( $template ) {
+		// Get the template slug
+		$template_slug = rtrim( $template, '.php' );
+		$template      = $template_slug . '.php';
+
+		// Check if a custom template exists in the theme folder, if not, load the plugin template file
+		if ( $theme_file = locate_template( array( 'wppericles_templates/' . $template ) ) ) {
+			$file = $theme_file;
+		} else {
+			$file = WP_PERICLES_PLUGIN_PATH . 'templates/' . $template;
+		}
+
+		return apply_filters( 'wppericles_repl_template_' . $template, $file );
 	}
 }
 
