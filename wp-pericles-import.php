@@ -14,6 +14,7 @@ namespace WPPERICLES;
 
 
 use function add_action;
+use function add_filter;
 use function class_exists;
 use function create_cpt;
 use function define;
@@ -27,10 +28,12 @@ use function time;
 use function untrailingslashit;
 use function var_dump;
 use function wp_clear_scheduled_hook;
+use function wp_enqueue_style;
 use function wp_get_upload_dir;
 use function wp_next_scheduled;
 use const WP_PERICLES_ACF_PATH;
 use function wp_schedule_event;
+use const WP_PERICLES_PLUGIN_URL;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -89,11 +92,13 @@ class WPPericles {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
-		add_action( 'plugins_loaded', array( $this, 'load_files' ), 20 );
+		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
 		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'load_style' ] );
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 		add_filter( 'acf/settings/l10n_textdomain', [ $this, 'acf_textdomain' ] );
+		add_filter( 'template_include', [ $this, 'load_template'] );
 
 		register_activation_hook( __FILE__, [ $this, 'activation' ] );
 		register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
@@ -148,14 +153,18 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
 		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
 		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
-
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/cpt.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/location_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/property_type_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
+		require plugin_dir_path( __FILE__ ) . '/inc/templating.php';
 
+	}
+
+	public function load_style(){
+		wp_enqueue_style( 'wppericles', WP_PERICLES_PLUGIN_URL . '/assets/css/wppericles.css' );
 	}
 
 	public function my_register_fields() {
@@ -203,6 +212,36 @@ class WPPericles {
 
 	public function acf_textdomain( $td ) {
 		return $td = 'wp-pericles-import';
+	}
+
+	public function load_template( $template ) {
+		// Post ID
+		$post_id = get_the_ID();
+		// For all other CPT
+		if ( get_post_type( $post_id ) != 'real-estate-property' ) {
+			return $template;
+		}
+
+		// Else use custom template
+		if ( is_single() ) {
+			return $this->get_template_hierarchy( 'single' );
+		}
+		return $template;
+	}
+
+	public function get_template_hierarchy( $template ) {
+		// Get the template slug
+		$template_slug = rtrim( $template, '.php' );
+		$template      = $template_slug . '.php';
+
+		// Check if a custom template exists in the theme folder, if not, load the plugin template file
+		if ( $theme_file = locate_template( array( 'wppericles_templates/' . $template ) ) ) {
+			$file = $theme_file;
+		} else {
+			$file = WP_PERICLES_PLUGIN_PATH . 'templates/' . $template;
+		}
+
+		return apply_filters( 'wppericles_repl_template_' . $template, $file );
 	}
 }
 

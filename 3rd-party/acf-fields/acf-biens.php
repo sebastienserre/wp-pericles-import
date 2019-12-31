@@ -118,7 +118,7 @@ if ( function_exists( 'acf_add_local_field_group' ) ):
 					array(
 						'key'               => 'field_5cd51683215e8',
 						'label'             => 'N° ASP',
-						'name'              => 'wp_pericles_asp',
+						'name'              => 'wppericles_asp',
 						'type'              => 'text',
 						'instructions'      => '',
 						'required'          => 0,
@@ -2008,7 +2008,7 @@ if ( function_exists( 'acf_add_local_field_group' ) ):
 			array(
 				'key'               => 'field_5cd52fdb697a9',
 				'label'             => 'Divers',
-				'name'              => 'divers',
+				'name'              => 'wppericles_divers',
 				'type'              => 'group',
 				'instructions'      => '',
 				'required'          => 0,
