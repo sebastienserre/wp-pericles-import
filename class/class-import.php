@@ -8,6 +8,7 @@ use function apply_filters;
 use function array_filter;
 use function array_push;
 use function basename;
+use function copy;
 use function date;
 use function delete_post_meta;
 use function do_action;
@@ -20,19 +21,31 @@ use function get_the_ID;
 use function has_post_thumbnail;
 use function implode;
 use function intval;
+use function mkdir;
 use function nl2br;
+use function preg_replace;
+use function range;
 use function sanitize_text_field;
 use function sanitize_title;
 use SimpleXMLElement;
+use function set_post_thumbnail;
 use function strval;
+use function update_field;
 use function update_post_meta;
 use function wp_check_filetype;
 use function wp_delete_file;
+use function wp_generate_attachment_metadata;
 use function wp_get_attachment_url;
+use function wp_get_upload_dir;
 use function wp_insert_attachment;
 use function wp_insert_post;
 use function wp_insert_term;
+use function wp_update_attachment_metadata;
+use function wp_upload_dir;
+use const WP_DEBUG;
+use const WP_PERICLES_EXPORT_FOLDER;
 use const WP_PERICLES_IMPORT;
+use const WP_PERICLES_IMPORT_IMG;
 use const WP_PERICLES_IMPORT_TMP;
 use function wp_set_post_terms;
 use XMLReader;
@@ -55,6 +68,7 @@ class Import {
 	protected $cpt;
 	protected $location;
 	protected $type;
+	protected $node;
 
 
 	public function __construct() {
@@ -66,6 +80,7 @@ class Import {
 		$this->cpt      = $this->get_cpt();
 		$this->location = $this->get_location();
 		$this->type     = $this->get_property_type();
+		$this->node     = $this->get_node_name();
 
 
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
@@ -90,12 +105,28 @@ class Import {
 		return $this->set_zipname();
 	}
 
+	public function get_node_name() {
+		return $this->set_node_name();
+	}
+
+	public function set_node_name() {
+		$node = $element->BIEN;
+		if ( $this->is_pericles_air() ) {
+			$node = $element->ANNONCES->ANNONCE;
+		}
+
+		return $node;
+	}
+
 	/**
 	 * @return string
 	 */
 	public function set_name() {
-		$name = explode( '.', $this->zipname );
-		$name = $name[0] . '.XML';
+		$name = $this->zipname;
+		if ( ! $this->is_pericles_air() ) {
+			$name = explode( '.', $this->zipname );
+			$name = $name[0] . '.XML';
+		}
 
 		return $name;
 	}
@@ -114,76 +145,100 @@ class Import {
 	public function get_location() {
 		return $this->set_location();
 	}
+
 	public function get_property_type() {
 		return $this->set_property_type();
 	}
 
-	public function get_external(){
+	public function get_external() {
 		return $this->set_external();
 	}
 
-	public function set_external(){
-		$external  = get_field( 'wppericles_list_external', 'option' );
+	public function set_external() {
+		$external = get_field( 'wppericles_list_external', 'option' );
+
 		return $external;
 	}
 
 	public function set_location() {
-		if ( ! empty( $this->external ) ) {
-			switch ( $this->external ){
+		if ( ! empty( $this->cpt ) ) {
+			switch ( $this->cpt ) {
 				case 'estate_property' :
 					$taxo = 'property_city';
 					break;
+				case 'real-estate-property' :
+					$taxo = 'location_tax';
+					break;
 			}
-		} else {
-			$taxo = 'location_tax';
-			$taxo = apply_filters( 'wppericles_location', $taxo );
 		}
-		return $taxo;
+
+		return apply_filters( 'wppericles_location', $taxo );
 	}
 
 	public function set_property_type() {
-		if ( ! empty( $this->external ) ) {
-			switch ( $this->external ){
+		if ( ! empty( $this->cpt ) ) {
+			switch ( $this->cpt ) {
 				case 'estate_property' :
 					$type = 'property_category';
 					break;
+				case 'real-estate-property' :
+					$type = 'property_types';
+					break;
 			}
-		} else {
-			$type = 'property_types';
-			$type = apply_filters( 'wppericles_property_type', $type );
 		}
-		return $type;
+
+		return apply_filters( 'wppericles_property_type', $type );
 	}
 
 	public function get_property_situation( $bien ) {
-		$situation_name = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
-		$situation      = get_term_by( 'name', $situation_name, $this->location );
-		if ( ! $situation ) {
-			wp_insert_term( $situation_name, $this->location );
-			$situation   = get_term_by( 'name', $situation_name, $this->location );
+		if ( ! $this->is_pericles_air() ) {
+			$situation_name = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
+		} else {
+			$situation_name = sanitize_text_field( strval( $bien->VILLE ) );
 		}
+		$situation = get_term_by( 'name', $situation_name, $this->location );
+		if ( ! $situation ) {
+			$terms     = wp_insert_term( $situation_name, $this->location );
+			$situation = get_term_by( 'name', $situation_name, $this->location );
+		}
+
 		return $situation;
 	}
 
 	public function get_property_term( $bien ) {
-		$property_name = sanitize_text_field( strval( $bien->CATEGORIE ) );
+		if ( $this->is_pericles_air() ) {
+			$property_name = sanitize_text_field( strval( $bien->CAT ) );
+		} else {
+			$property_name = sanitize_text_field( strval( $bien->CATEGORIE ) );
+		}
 		$property_term = get_term_by( 'name', $property_name, $this->type );
 		if ( ! $property_term ) {
-			wp_insert_term( $property_name, $this->type );
-			$property_term   = get_term_by( 'name', $property_name, $this->type );
+			$insert        = wp_insert_term( $property_name, $this->type );
+			$property_term = get_term_by( 'name', $property_name, $this->type );
 		}
+
 		return $property_term;
 	}
 
 	public function set_cpt() {
-		if ( get_field( 'wppericles_create_cpt', 'option' ) ){
-			$cpt =  'real-estate-property';
+		if ( get_field( 'wppericles_create_cpt', 'option' ) ) {
+			$cpt = 'real-estate-property';
 		} elseif ( ! empty( get_field( 'wppericles_list_external', 'option' ) ) ) {
 			$cpt = get_field( 'wppericles_list_external', 'option' );
 		} else {
-			$cpt =  get_field( 'wppericles_existing_cpt', 'option' );
+			$cpt = get_field( 'wppericles_existing_cpt', 'option' );
 		}
+
 		return apply_filters( 'wppericles_cpt', $cpt );
+	}
+
+	public function is_pericles_air() {
+		$version = get_field( 'wppericles_version', 'option' );
+		if ( 'air' === $version ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public function extract_photo() {
@@ -210,12 +265,22 @@ class Import {
 		copy( WP_PERICLES_IMPORT . $this->zipname, WP_PERICLES_EXPORT_FOLDER . 'export-' . $date . '.zip' );
 
 		error_log( "$this->zipname copied" );
-		$zip = new ZipArchive();
-		$res = $zip->open( $file );
-		if ( $res === true ) {
-			$zip->extractTo( WP_PERICLES_IMPORT_TMP );
-			$zip->extractTo( WP_PERICLES_IMPORT_IMG );
-			$zip->close();
+		if ( ! $this->is_pericles_air() ) {
+			$zip = new ZipArchive();
+			$res = $zip->open( $file );
+			if ( $res === true ) {
+				$zip->extractTo( WP_PERICLES_IMPORT_TMP );
+				$zip->extractTo( WP_PERICLES_IMPORT_IMG );
+				$zip->close();
+			}
+		}
+
+		if ( $this->is_pericles_air() ) {
+			if ( ! file_exists( WP_PERICLES_IMPORT_TMP ) ) {
+				mkdir( WP_PERICLES_IMPORT_TMP, 0777, true );
+			}
+			copy( WP_PERICLES_IMPORT . $this->zipname, WP_PERICLES_IMPORT_TMP . $this->zipname );
+
 		}
 
 		wp_delete_file( WP_PERICLES_IMPORT_IMG . $this->name );
@@ -240,42 +305,67 @@ class Import {
 		 */
 
 		$asp = [];
-		foreach ( $listings as $listing ) {
-			$listing_asp = get_post_meta( $listing->ID, 'wppericles_agence_wp_pericles_asp', true );
-			$xml         = new XMLReader();
-			$xml_file    = WP_PERICLES_IMPORT_TMP . $this->name;
-			$xml->open( $xml_file );
-			$xml->read();
+		if ( ! empty( $listings ) ) {
+			foreach ( $listings as $listing ) {
+				$listing_asp = get_post_meta( $listing->ID, 'wppericles_agence_wp_pericles_asp', true );
+				$xml         = new XMLReader();
+				$xml_file    = WP_PERICLES_IMPORT_TMP . $this->name;
+				$open        = $xml->open( $xml_file );
+				$read        = $xml->read();
 
 
-			$element = new SimpleXMLElement( $xml->readOuterXml() );
-			foreach ( $element->BIEN as $bien ) {
+				$element = new SimpleXMLElement( $xml->readOuterXml() );
+				foreach ( $element->BIEN as $bien ) {
 
-				$asp_bien = strval( $bien->NO_ASP );
-				if ( $asp_bien === $listing_asp ) {
-					array_push( $asp, $listing->ID );
+					$asp_bien = strval( $bien->NO_ASP );
+					if ( $asp_bien === $listing_asp ) {
+						array_push( $asp, $listing->ID );
+					}
 				}
-			}
 
+			}
 		}
 		error_log( 'end check' );
 		$this->read_xml();
 
 	}
 
-	/**
-	 *
-	 */
+	public function format_date_post( $bien ) {
+		if ( $this->is_pericles_air() ) {
+			$date      = $bien->DATE_MAND . ' ' . '09:00:00';
+		} else {
+			$post_date = explode( '/', $bien->DATE_OFFRE );
+			$date      = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
+		}
+
+		return $date;
+	}
+
+	public function format_date_modif( $bien ) {
+		if ( $this->is_pericles_air() ) {
+			$post_modified = $bien->DATE_MODIF_PRIX . ' ' . '09:00:00';
+		} else {
+			$post_modified = explode( '/', $bien->DATE_MODIF );
+			$post_modified = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
+		}
+
+		return $post_modified;
+	}
+
 	public function read_xml() {
 		set_time_limit( 1800 );
 		error_log( 'start read_xml' );
 		$xml           = new XMLReader();
-		$xml->open( WP_PERICLES_IMPORT_TMP . $this->name );
-		$xml->read();
-		$xml->name;
+		$open          = $xml->open( WP_PERICLES_IMPORT_TMP . $this->name );
+		$read          = $xml->read();
+		$name          = $xml->name;
 		$element       = new SimpleXMLElement( $xml->readOuterXml() );
-		$wp_upload_dir = wp_upload_dir();
-		foreach ( $element->BIEN as $bien ) {
+		if ( $this->is_pericles_air() ) {
+			$node = $element->ANNONCES->ANNONCE;
+		} else {
+			$node = $element->BIEN;
+		}
+		foreach ( $node as $bien ) {
 			$args    = array(
 				'post_type'  => $this->cpt,
 				'meta_query' => array(
@@ -290,7 +380,7 @@ class Import {
 			$listing = get_posts( $args );
 
 			/**
-			 * Retrieve Xml datas
+			 * Retrieve XML datas
 			 */
 			if ( $listing ) {
 				$listing_id = $listing[0]->ID;
@@ -311,29 +401,20 @@ class Import {
 			error_log( $listing_id . ' ' . $situation->term_id );
 
 			$detail = [];
-			$detail = $this->format_postmeta( $detail, $bien );
+			$detail = $this->format_postmeta( $detail, $bien, $element );
 
 			/**
 			 * format date
 			 */
 
-			$post_date = explode( '/', $bien->DATE_OFFRE );
-			$post_date = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
+			$post_date     = $this->format_date_post( $bien );
+			$post_modified = $this->format_date_modif( $bien );
 
+			$args_title = $this->create_title( $bien );
+			$content    = $this->create_content( $bien );
 
-			$post_modified = explode( '/', $bien->DATE_MODIF );
-			$post_modified = $post_modified[2] . '-' . $post_modified[1] . '-' . $post_modified[0] . ' ' . '09:00:00';
-
-			$args_title = [
-				sanitize_text_field( strval( $bien->CATEGORIE ) ),
-				sanitize_text_field( strval( $bien->VILLE_OFFRE ) ),
-				sanitize_text_field( strval( $bien->NO_MANDAT ) ),
-
-			];
-
-			$title   = implode( ' - ', array_filter( $args_title ) );
-			$content = nl2br( strval( $bien->TEXTE_FR ) );
-			$slug    = sanitize_title( $title );
+			$title = implode( ' - ', array_filter( $args_title ) );
+			$slug  = sanitize_title( $title );
 
 			$postarr = array(
 				'ID'             => $listing_id,
@@ -350,7 +431,7 @@ class Import {
 				'meta_input'     => $detail,
 			);
 
-			$insert  = wp_insert_post( $postarr, true );
+			$insert = wp_insert_post( $postarr, true );
 
 			/**
 			 * Fires just after Property is inserted in db
@@ -359,107 +440,142 @@ class Import {
 			 */
 			do_action( 'wppericles_after_insert_property', $insert, $bien );
 
-			$cat = wp_set_post_terms( $insert, $property_term->term_id, $this->type, true );
+			$cat = wp_set_post_terms( $insert, $property_term->name, $this->type, true );
 			$loc = wp_set_post_terms( $insert, $situation->term_id, $this->location, true );
 
-			/**
-			 * MAJ Gallery Image
-			 */
-			$alphabet = array();
-			foreach ( range( 'a', 'z' ) as $i ) {
-				array_push( $alphabet, $i );
-			}
+			$this->prepare_gallery( $insert, $bien, $title );
 
-			/**
-			 * Créer la galerie
-			 */
-			delete_post_meta( $insert, 'wppericles_image' );
-			$imgs = [];
-			foreach ( $alphabet as $letter ) {
-				$societe = strval( $bien->CODE_SOCIETE );
-				$site    = strval( $bien->CODE_SITE );
-				$asp = get_post_meta( $insert, 'wppericles_agence_wp_pericles_asp', true );
-				$img     = WP_PERICLES_IMPORT_IMG . $societe . '-' . $site . '-' . $asp . '-' . $letter . '.jpg';
-				if ( file_exists( $img ) ) {
-
-
-					$filetype      = wp_check_filetype( $img, null );
-					$attachment    = array(
-						'guid'           => $wp_upload_dir['url'] . '/' . basename( $img ),
-						'post_mime_type' => $filetype['type'],
-						'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $img ) ),
-						'post_content'   => '',
-						'post_status'    => 'inherit',
-					);
-					$attachment_id = wp_insert_attachment( $attachment, $img, $insert );
-					update_post_meta( $attachment_id, '_wp_attachment_image_alt', $title );
-
-					// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-					require_once( ABSPATH . 'wp-admin/includes/image.php' );
-
-					// Generate the metadata for the attachment, and update the database record.
-					$attach_data = wp_generate_attachment_metadata( $attachment_id, $img );
-					wp_update_attachment_metadata( $attachment_id, $attach_data );
-
-					/**
-					 * Attribution du post thumbnail pour la 1ere image.
-					 */
-					if ( ! has_post_thumbnail( $insert ) ) {
-						set_post_thumbnail( $insert, $attachment_id );
-					}
-
-					if ( 'a' !== $letter ) {
-						array_push( $imgs, $attachment_id );
-					}
-
-				}
-			}
-
-			/**
-			 * Ajout des images dans la galerie
-			 */
-			if ( 'a' !== $letter ) {
-				// Add current images to array
-				$image_url                      = wp_get_attachment_url( $attachment_id );
-				$images_array[ $attachment_id ] = $image_url;
-				update_field( 'wppericles_image', $imgs, $insert );
-			}
-			unset( $images_array );
 		}
 		/**
 		 * On supprime le dossier temporaire puis on le recrée vide pour le prochain import.
 		 */
-		global $wp_filesystem;
 		$this->delete_files( WP_PERICLES_IMPORT_TMP );
 
-		if ( ! file_exists( $wp_upload_dir['basedir'] . '/import/temp' ) ) {
-			mkdir( $wp_upload_dir['basedir'] . '/import/temp', 0777, true );
+		if ( ! file_exists( WP_PERICLES_IMPORT_TMP ) ) {
+			mkdir( WP_PERICLES_IMPORT_TMP, 0777, true );
 		}
 		/**
 		 * Delete export.ZIP
 		 */
-		if ( file_exists( WP_PERICLES_IMPORT . 'export.ZIP' ) ) {
-			wp_delete_file( WP_PERICLES_IMPORT . 'export.ZIP' );
+		if ( file_exists( WP_PERICLES_IMPORT . $this->zipname ) && false === WP_DEBUG ) {
+			wp_delete_file( WP_PERICLES_IMPORT . $this->zipname );
 		}
 		$this->delete_pid();
 		error_log( 'stop read_xml' );
 	}
 
-	public function format_postmeta( $detail, $bien ) {
+	public function format_postmeta( $detail, $bien, $element = '' ) {
 		switch ( $this->cpt ) {
 			case 'estate_property':
 				$detail = WPResidence::estate_property_meta( $detail, $bien );
 				break;
 			case 'real-estate-property':
 			default:
-				$detail = $this->real_estate_property_meta( $detail, $bien );
+				if ( ! $this->is_pericles_air() ) {
+					$detail = $this->real_estate_property_meta( $detail, $bien );
+				} else {
+					$detail                                                    = $this->air_real_estate_property_meta( $detail, $bien );
+					$detail['wppericles_agence_wppericles_raison_sociale']     = sanitize_text_field( strval(
+						$element->RAISON_SOCIALE ) );
+					$detail['wppericles_agence_wppericles_adresse_1_agence']   = sanitize_text_field( strval(
+						$element->ADRESSES ) );
+					$detail['wppericles_agence_wppericles_code_postal_agence'] = sanitize_text_field( strval(
+						$element->CP
+					) );
+					$detail['wppericles_agence_wppericles_ville_agence']       = sanitize_text_field( strval(
+						$element->VILLE ) );
+					$detail['wppericles_agence_wppericles_telephone_agence']   = sanitize_text_field( strval(
+						$element->TEL ) );
+					$detail['wppericles_agence_wppericles_site_web_agence']    = sanitize_text_field( strval(
+						$element->WEB ) );
+
+				}
 				break;
 		}
+
 		/**
 		 * Fire after data from XML has been retrieved and before property is saved.
 		 * You can easily match your own post meta with this filter
 		 */
 		return apply_filters( 'wppericles_listings_meta', $detail, $bien );
+	}
+
+	public function air_real_estate_property_meta( $detail, $bien ) {
+		$detail['wppericles_adresse_wppericles_ville_offre']           = sanitize_text_field( strval( $bien->VILLE ) );
+		$detail['wppericles_bien_wppericles_mandat']                   = intval( strval( $bien->NO_MANDAT ) );
+		$detail['wppericles_interieur_wppericles_nb_chambres']         = intval( strval( $bien->NB_CHB ) );
+		$detail['wppericles_interieur_wppericles_nb_sdb']              = intval( strval( $bien->NB_SDB ) );
+		$detail['wppericles_exterieur_wppericles_surface_terrain']     = intval( strval( $bien->SURF_JAR ) );
+		$detail['wppericles_interieur_wppericles_surface_habitable']   = intval( strval( $bien->SURF_HAB ) );
+		$detail['wppericles_exterieur_wppericles_terrasse']            = intval( strval( $bien->NB_TERRASSE ) );
+		$detail['wppericles_interieur_wppericles_nb_sde']              = intval( strval( $bien->NB_SE ) );
+		$detail['wppericles_pratique_wppericles_nature_chauffage']     = sanitize_text_field( strval( $bien->NAT_CHAUFF ) );
+		$detail['wppericles_bien_annee_de_construction']               = intval( strval( $bien->ANNEE_CONS ) );
+		$detail['wppericles_bien_wppericles_prix']                     = intval( strval( $bien->PV ) );
+		$detail['wppericles_adresse_wppericles_code_postal_offre']     = sanitize_text_field( strval( $bien->CP_WEB ) );
+		$detail['wppericles_adresse_wppericles_ville_offre']           = sanitize_text_field( strval( $bien->VILLE_WEB ) );
+		$detail['wppericles_bien_wppericles_negociateur']              = sanitize_text_field( strval(
+			$bien->CONTACTS->CONTACT->LIBELLE ) );
+		$detail['divers_wppericles_score_dpe']                         = sanitize_text_field( intval( strval( $bien->VAL_DPE ) ) );
+		$detail['divers_wppericles_score_ges']                         = sanitize_text_field( strval( $bien->VAL_GES ) );
+		$detail['wppericles_agence_wp_pericles_asp']                   = sanitize_text_field( strval( $bien->NO_ASP ) );
+		$detail['wppericles_agence_wppericles_code_societe']           = sanitize_text_field( strval( $bien->CODE_SOCIETE ) );
+		$detail['wppericles_agence_wppericles_code_site']              = sanitize_text_field( strval( $bien->CODE_SITE ) );
+		$detail['wppericles_agence_wppericles_dossier']                = sanitize_text_field( strval( $bien->NO_DOSSIER ) );
+		$detail['wppericles_bien_wppericles_type_mandat']              = sanitize_text_field( strval( $bien->TYPE_MANDAT ) );
+		$detail['wppericles_bien_wppericles_honoraires']               = sanitize_text_field( strval( $bien->HONO ) );
+		$detail['wppericles_bien_wppericles_travaux']                  = sanitize_text_field( strval( $bien->TRAVAUX ) );
+		$detail['wppericles_bien_wppericles_charges']                  = sanitize_text_field( strval( $bien->CHARGES_ANN ) );
+		$detail['wppericles_bien_wppericles_depot_garantie']           = sanitize_text_field( strval( $bien->HRAL ) );
+		$detail['wppericles_bien_wppericles_taxe_habitation']          = sanitize_text_field( strval( $bien->TAXE_HAB ) );
+		$detail['wppericles_bien_date_disponibilite']                  = sanitize_text_field( strval( $bien->DATE_DISP ) );
+		$detail['wppericles_bien_wppericles_taxe_fonciere']            = sanitize_text_field( strval( $bien->TAXE_FONC ) );
+		$detail['wppericles_internet_wppericles_code_postal_internet'] = sanitize_text_field( strval( $bien->CP_WEB ) );
+		$detail['wppericles_internet_wppericles_ville_internet']       = sanitize_text_field( strval( $bien->VILLE_WEB
+		) );
+		$detail['wppericles_pratique_wppericles_quartier']             = sanitize_text_field( strval( $bien->QUARTIER ) );
+		$detail['wppericles_pratique_wppericles_residence']            = sanitize_text_field( strval( $bien->RESIDENCE ) );
+		$detail['wppericles_pratique_wppericles_transport']            = sanitize_text_field( strval( $bien->TRANSPORT ) );
+		$detail['wppericles_pratique_wppericles_proximite']            = sanitize_text_field( strval( $bien->PROXIMITE ) );
+		$detail['wppericles_interieur_wppericles_nb_pieces']           = sanitize_text_field( strval( $bien->NB_PCE ) );
+		$detail['wppericles_interieur_wppericles_surface_carrez']      = sanitize_text_field( strval( $bien->SURF_CARR ) );
+		$detail['wppericles_interieur_wppericles_surface_sejour']      = sanitize_text_field( strval( $bien->SURF_SEJ ) );
+		$detail['wppericles_pratique_wppericles_etage']                = sanitize_text_field( strval( $bien->ETAGE ) );
+		$detail['wppericles_interieur_wppericles_nb_etages']           = sanitize_text_field( strval( $bien->NB_ETAGE ) );
+		$detail['wppericles_interieur_wppericles_cuisine']             = sanitize_text_field( strval( $bien->TYPE_CUIS ) );
+		$detail['wppericles_interieur_wppericles_nb_wc']               = sanitize_text_field( strval( $bien->NB_WC ) );
+		$detail['wppericles_annexes_wppericles_nb_parking_interieur']  = sanitize_text_field( strval( $bien->NB_PARK_INT ) );
+		$detail['wppericles_annexes_wppericles_nb_parking_exterieur']  = sanitize_text_field( strval( $bien->NB_PARK_EXT ) );
+		$detail['wppericles_annexes_wppericles_nb_garage_box']         = sanitize_text_field( strval(
+			$bien->NB_GAR ) );
+		$detail['wppericles_annexes_wppericles_nb_caves']              = sanitize_text_field( strval( $bien->NB_CAVE ) );
+		$detail['wppericles_pratique_wppericles_type_chauffage']       = sanitize_text_field( strval( $bien->TYPE_CHAUFF ) );
+		$detail['wppericles_agence_wppericles_type_offre']             = sanitize_text_field( strval( $bien->TYPE_MANDAT ) );
+		$detail['wppericles_pratique_wppericles_ascenseur']            = sanitize_text_field( strval( $bien->ASCE ) );
+		$detail['wppericles_exterieur_wppericles_balcon']              = sanitize_text_field( strval( $bien->NB_BALCON
+		) );
+		$detail['wppericles_exterieur_wppericles_piscine']             = sanitize_text_field( strval( $bien->PISCINE ) );
+		$detail['wppericles_pratique_wppericles_acces_handicape']      = sanitize_text_field( strval( $bien->HAND ) );
+		$detail['divers_wppericles_mur_mitoyens']                      = sanitize_text_field( strval( $bien->NB_MUR_MIT ) );
+		$detail['wppericles_pratique_wppericles_immeuble_prestige']    = sanitize_text_field( strval( $bien->STANDING ) );
+		$detail['wppericles_bien_wppericles_dispo']                    = sanitize_text_field( strval( $bien->DISPO ) );
+		$detail['wppericles_bien_wppericles_loyer2']                   = sanitize_text_field( strval( $bien->LOYER ) );
+		$detail['wppericles_exterieur_wppericles_surface_jardin']      = sanitize_text_field( strval( $bien->SURF_JAR ) );
+		$detail['divers_wppericles_interphone']                        = sanitize_text_field( strval( $bien->INTERPHONE ) );
+		$detail['wppericles_pratique_wppericles_digicode']             = sanitize_text_field( strval( $bien->DIGICODE ) );
+		$detail['divers_wppericles_gardiennage']                       = sanitize_text_field( strval( $bien->GARDIENNAGE ) );
+		$detail['wppericles_bien_wppericles_asp_lot']                  = sanitize_text_field( strval( $bien->NO_ASP ) );
+		$detail['wppericles_bien_wppericles_viager']                   = sanitize_text_field( strval( $bien->VIAGER ) );
+		$detail['divers_wppericles_non_assujetti_dpe']                 = sanitize_text_field( strval( $bien->NON_DPE ) );
+		$detail['wppericles_bien_wppericles_copropriete']              = sanitize_text_field( strval( $bien->COPROPRIETE ) );
+		$detail['wppericles_bien_wppericles_nb_de_lot_copropriete']    = sanitize_text_field( strval( $bien->NB_LOTS_COPRO ) );
+		$detail['wppericles_bien_wppericles_montant_quote_part']       = sanitize_text_field( strval( $bien->MONTANT_QUOTEPART ) );
+		$detail['wppericles_bien_wppericles_procedure_syndicat']       = sanitize_text_field( strval(
+			$bien->PROCEDURE_SYND ) );
+		$detail['wppericles_prix_honoraires_etat_lieux_ttc']           = sanitize_text_field( strval(
+			$bien->HONO_ETAT_LIEU_LOC ) );
+
+		return $detail;
 	}
 
 	public function real_estate_property_meta( $detail, $bien ) {
@@ -607,6 +723,103 @@ class Import {
 	public function delete_pid() {
 		if ( file_exists( WP_PERICLES_IMPORT . 'pid.txt' ) ) {
 			unlink( WP_PERICLES_IMPORT . 'pid.txt' );
+		}
+	}
+
+	public function create_title( $bien ) {
+		if ( $this->is_pericles_air() ) {
+			$args_title = [
+				sanitize_text_field( strval( $bien->CAT ) ),
+				sanitize_text_field( strval( $bien->VILLE_WEB ) ),
+				sanitize_text_field( strval( $bien->NO_MANDAT ) ),
+
+			];
+		} else {
+			$args_title = [
+				sanitize_text_field( strval( $bien->CATEGORIE ) ),
+				sanitize_text_field( strval( $bien->VILLE_OFFRE ) ),
+				sanitize_text_field( strval( $bien->NO_MANDAT ) ),
+
+			];
+		}
+
+		return $args_title;
+	}
+
+	public function create_content( $bien ) {
+		if ( $this->is_pericles_air() ) {
+			$content = nl2br( strval( $bien->TXT_INTERNET ) );
+		} else {
+			$content = nl2br( strval( $bien->TEXTE_FR ) );
+		}
+
+		return $content;
+	}
+
+	public function prepare_gallery( $insert, $bien, $title ) {
+		$wp_upload_dir = wp_upload_dir();
+		/**
+		 * MAJ Gallery Image
+		 */
+		$alphabet = array();
+		foreach ( range( 'a', 'z' ) as $i ) {
+			array_push( $alphabet, $i );
+		}
+
+		/**
+		 * Créer la galerie
+		 */
+		delete_post_meta( $insert, 'wppericles_image' );
+		$imgs = [];
+		foreach ( $alphabet as $letter ) {
+			$societe = strval( $bien->CODE_SOCIETE );
+			$site    = strval( $bien->CODE_SITE );
+			$asp     = get_post_meta( $insert, 'wppericles_agence_wp_pericles_asp', true );
+			$img     = WP_PERICLES_IMPORT_IMG . $societe . '-' . $site . '-' . $asp . '-' . $letter . '.jpg';
+			if ( file_exists( $img ) ) {
+
+
+				$filetype      = wp_check_filetype( $img, null );
+				$attachment    = array(
+					'guid'           => $wp_upload_dir['url'] . '/' . basename( $img ),
+					'post_mime_type' => $filetype['type'],
+					'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $img ) ),
+					'post_content'   => '',
+					'post_status'    => 'inherit',
+				);
+				$attachment_id = wp_insert_attachment( $attachment, $img, $insert );
+				update_post_meta( $attachment_id, '_wp_attachment_image_alt', $title );
+
+				// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+				require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+				// Generate the metadata for the attachment, and update the database record.
+				$attach_data = wp_generate_attachment_metadata( $attachment_id, $img );
+				wp_update_attachment_metadata( $attachment_id, $attach_data );
+
+				/**
+				 * Attribution du post thumbnail pour la 1ere image.
+				 */
+				if ( ! has_post_thumbnail( $insert ) ) {
+					set_post_thumbnail( $insert, $attachment_id );
+				}
+
+				if ( 'a' !== $letter ) {
+					array_push( $imgs, $attachment_id );
+				}
+
+			}
+
+			/**
+			 * Ajout des images dans la galerie
+			 */
+			if ( 'a' !== $letter ) {
+				// Add current images to array
+				$image_url                      = wp_get_attachment_url( $attachment_id );
+				$images_array[ $attachment_id ] = $image_url;
+				update_field( 'wppericles_image', $imgs, $insert );
+			}
+			unset( $images_array );
 		}
 	}
 

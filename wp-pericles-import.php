@@ -5,7 +5,7 @@
 	Description: Connect your Real Estate Agency to WordPress!
 	Author: Sébastien SERRE
 	Author URI: https://thivinfo.com
-	Version: 1.1.0
+	Version: 1.2.0
 	Text Domain: wp-pericles-import
 	Domain Path: /languages
 	*/
@@ -25,6 +25,7 @@ use function register_activation_hook;
 use function register_deactivation_hook;
 use function time;
 use function untrailingslashit;
+use function var_dump;
 use function wp_clear_scheduled_hook;
 use function wp_get_upload_dir;
 use function wp_next_scheduled;
@@ -92,6 +93,7 @@ class WPPericles {
 		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
+		add_filter( 'acf/settings/l10n_textdomain', [ $this, 'acf_textdomain' ] );
 
 		register_activation_hook( __FILE__, [ $this, 'activation' ] );
 		register_deactivation_hook( __FILE__, [ $this, 'deactivation' ] );
@@ -145,7 +147,7 @@ class WPPericles {
 		}
 		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
 		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
-		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
+	//	require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
 
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
@@ -197,6 +199,10 @@ class WPPericles {
 		// return
 		return $path;
 
+	}
+
+	public function acf_textdomain( $td ) {
+		return $td = 'wp-pericles-import';
 	}
 }
 

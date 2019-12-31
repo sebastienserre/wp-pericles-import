@@ -56,6 +56,30 @@
             "return_format": "object"
         },
         {
+            "key": "field_5e09bad4d0fc0",
+            "label": "Version de Pericles",
+            "name": "wppericles_version",
+            "type": "radio",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "5": "Pericles 5 ( Desktop version)",
+                "air": "Pericles AIR"
+            },
+            "allow_null": 1,
+            "other_choice": 0,
+            "default_value": 5,
+            "layout": "vertical",
+            "return_format": "value",
+            "save_other_choice": 0
+        },
+        {
             "key": "field_5df0911ea92a4",
             "label": "Custom Post Type",
             "name": "",
@@ -86,25 +110,6 @@
             },
             "message": "",
             "default_value": 1,
-            "ui": 1,
-            "ui_on_text": "",
-            "ui_off_text": ""
-        },
-        {
-            "key": "field_5df092c933060",
-            "label": "Use an existing CPT ?",
-            "name": "wppericles_use_existing",
-            "type": "true_false",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": 0,
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "message": "",
-            "default_value": 0,
             "ui": 1,
             "ui_on_text": "",
             "ui_off_text": ""
@@ -193,7 +198,8 @@
                 "id": ""
             },
             "choices": {
-                "estate_property": "WP Residence"
+                "estate_property": "WP Residence",
+                "listing": "WP Casa"
             },
             "default_value": [],
             "allow_null": 0,
@@ -266,5 +272,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1576245856
+    "modified": 1577707015
 }
