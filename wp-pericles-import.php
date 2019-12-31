@@ -5,7 +5,7 @@
 	Description: Connect your Real Estate Agency to WordPress!
 	Author: Sébastien SERRE
 	Author URI: https://thivinfo.com
-	Version: 1.2.1
+	Version: 1.3.0
 	Text Domain: wp-pericles-import
 	Domain Path: /languages
 	*/
