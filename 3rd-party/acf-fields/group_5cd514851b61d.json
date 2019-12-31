@@ -2002,7 +2002,7 @@
         {
             "key": "field_5cd52fdb697a9",
             "label": "Divers",
-            "name": "divers",
+            "name": "wppericles_divers",
             "type": "group",
             "instructions": "",
             "required": 0,
@@ -2561,5 +2561,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1577792727
+    "modified": 1577802769
 }

@@ -2008,7 +2008,7 @@ if ( function_exists( 'acf_add_local_field_group' ) ):
 			array(
 				'key'               => 'field_5cd52fdb697a9',
 				'label'             => 'Divers',
-				'name'              => 'divers',
+				'name'              => 'wppericles_divers',
 				'type'              => 'group',
 				'instructions'      => '',
 				'required'          => 0,

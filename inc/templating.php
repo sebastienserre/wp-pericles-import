@@ -4,12 +4,14 @@ namespace WP_PERICLES\Templates;
 
 use function add_action;
 use function apply_filters;
+use function array_filter;
 use function esc_attr;
 use function explode;
 use function get_field;
 use function get_fields;
 use function ob_get_clean;
 use function ob_start;
+use function sizeof;
 use function str_replace;
 use function ucwords;
 use function var_dump;
@@ -40,6 +42,7 @@ function display_agence_details() {
 	ob_start();
 	?>
     <div class="property_agency_details">
+        <h2><?php _e( 'Agency Details'); ?></h2>
 		<?php
 		foreach ( $agence as $key => $value ) {
 			if ( ! empty( $value ) ) {
@@ -58,10 +61,11 @@ add_action( 'wppericles_single_property_details', 'WP_PERICLES\Templates\display
 function display_property_details() {
 	$fields = get_fields();
 	foreach ( $fields as $key => $field ) {
+	    $field = array_filter( $field );
 		ob_start();
-		if ( ! empty( $field ) && 'wppericles_agence' !== $key ) {
+		if ( ! empty( $field ) && 'wppericles_agence' !== $key && 'wppericles_adresse' !== $key ) {
 			?>
-            <div class="property_details <?php echo $key ?>_details">
+            <div class="property_details <?php echo $key ?>_details" >
 				<?php
 				foreach ( $field as $k => $value ) {
 					if ( ! empty( $value ) ) {
