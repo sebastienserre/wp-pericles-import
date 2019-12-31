@@ -226,6 +226,7 @@ class WPPericles {
 		if ( is_single() ) {
 			return $this->get_template_hierarchy( 'single' );
 		}
+		return $template;
 	}
 
 	public function get_template_hierarchy( $template ) {
