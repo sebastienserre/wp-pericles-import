@@ -177,7 +177,6 @@ Example: export.ZIP', 'wp-pericles-import' ),
 				),
 				'choices'           => array(
 					'estate_property' => 'WP Residence',
-					'listing'         => 'WP Casa',
 				),
 				'default_value'     => array(),
 				'allow_null'        => 0,
