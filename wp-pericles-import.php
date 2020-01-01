@@ -95,6 +95,7 @@ class WPPericles {
 		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
 		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'load_style' ] );
+		add_action( 'plugins_loaded', [ $this, 'load_textdomain'] );
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 		add_filter( 'acf/settings/l10n_textdomain', [ $this, 'acf_textdomain' ] );
@@ -242,6 +243,13 @@ class WPPericles {
 		}
 
 		return apply_filters( 'wppericles_repl_template_' . $template, $file );
+	}
+
+	/**
+	 * Load plugin textdomain.
+	 */
+	public function load_textdomain() {
+		$lang = load_plugin_textdomain( 'wp-pericles-import', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 }
 

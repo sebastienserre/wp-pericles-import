@@ -4,7 +4,7 @@
     "fields": [
         {
             "key": "field_5cd5793e1309c",
-            "label": "Général",
+            "label": "General",
             "name": "",
             "type": "tab",
             "instructions": "",
@@ -20,10 +20,10 @@
         },
         {
             "key": "field_5cd5794d1309d",
-            "label": "Nom du zip",
+            "label": "File Name",
             "name": "wppericles_nom_zip",
             "type": "text",
-            "instructions": "Entre le nom du fichier ZIP exporté par Péricles dans \"wp-content\/uploads\/import\/\". (attention à la casse)\r\nExample: export.ZIP",
+            "instructions": "Please fill in the exported filename saved in \"wp-content\/uploads\/import\/\". (case sensitive)\r\nExample: export.ZIP",
             "required": 1,
             "conditional_logic": 0,
             "wrapper": {
@@ -39,7 +39,7 @@
         },
         {
             "key": "field_5cd6a074abb59",
-            "label": "Utilisateur Importateur",
+            "label": "Importer User",
             "name": "wppericles_utilisateur_importateur",
             "type": "user",
             "instructions": "",
@@ -57,7 +57,7 @@
         },
         {
             "key": "field_5e09bad4d0fc0",
-            "label": "Version de Pericles",
+            "label": "Pericles Version",
             "name": "wppericles_version",
             "type": "radio",
             "instructions": "",
@@ -97,7 +97,7 @@
         },
         {
             "key": "field_5d4edf4f8b75b",
-            "label": "Créer un Type de contenu dédié?",
+            "label": "Create a dedicated CPT ?",
             "name": "wppericles_create_cpt",
             "type": "true_false",
             "instructions": "",
@@ -132,39 +132,6 @@
             "ui": 1,
             "ui_on_text": "",
             "ui_off_text": ""
-        },
-        {
-            "key": "field_5d4ee0439382c",
-            "label": "Utilisez un type de contenu existant",
-            "name": "wppericles_existing_cpt",
-            "type": "post_type_selector",
-            "instructions": "",
-            "required": 0,
-            "conditional_logic": [
-                [
-                    {
-                        "field": "field_5d4edf4f8b75b",
-                        "operator": "!=",
-                        "value": "1"
-                    },
-                    {
-                        "field": "field_5df092c933060",
-                        "operator": "==",
-                        "value": "1"
-                    },
-                    {
-                        "field": "field_5df091ff974cc",
-                        "operator": "!=",
-                        "value": "1"
-                    }
-                ]
-            ],
-            "wrapper": {
-                "width": "",
-                "class": "",
-                "id": ""
-            },
-            "select_type": 1
         },
         {
             "key": "field_5df0caffcf03b",
@@ -272,5 +239,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1577707015
+    "modified": 1577879030
 }
