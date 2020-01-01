@@ -146,7 +146,7 @@ Example: export.ZIP', 'wp-pericles-import' ),
 			),
 			array(
 				'key'               => 'field_5df0caffcf03b',
-				'label'             => 'Which Plugin or Theme do you use?',
+				'label'             => __( 'Which Plugin or Theme do you use?', 'wp-pericles-import' ),
 				'name'              => 'wppericles_list_external',
 				'type'              => 'select',
 				'instructions'      => '',

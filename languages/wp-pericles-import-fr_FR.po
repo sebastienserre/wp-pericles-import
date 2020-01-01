@@ -1,0 +1,351 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Pericles Import\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-01-01 12:21+0000\n"
+"PO-Revision-Date: 2020-01-01 12:31+0000\n"
+"Last-Translator: sebastienserre <sebastien@thivinfo.com>\n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.3.1; wp-5.3.2"
+
+#: inc/property_type_tax.php:9
+msgctxt "Taxonomy General Name"
+msgid "Property types"
+msgstr "Types de biens"
+
+#: inc/property_type_tax.php:10
+msgctxt "Taxonomy Singular Name"
+msgid "Property Type"
+msgstr "Type de bien"
+
+#: inc/property_type_tax.php:11
+msgid "Property Type"
+msgstr "Type de bien"
+
+#: inc/property_type_tax.php:12
+msgid "Property types"
+msgstr "Types de biens"
+
+#: inc/property_type_tax.php:13 inc/location_tax.php:13
+msgid "Parent Location"
+msgstr "Lieu parent"
+
+#: inc/property_type_tax.php:14 inc/location_tax.php:14
+msgid "Parent Location:"
+msgstr "Lieu parent:"
+
+#: inc/property_type_tax.php:15 inc/location_tax.php:15
+msgid "New Location Name"
+msgstr "Nom du nouveau lieu"
+
+#: inc/property_type_tax.php:16 inc/location_tax.php:16
+msgid "Add New Location"
+msgstr "Ajouter un nouveau lieu"
+
+#: inc/property_type_tax.php:17 inc/location_tax.php:17
+msgid "Edit Location"
+msgstr "Modifier le lieu"
+
+#: inc/property_type_tax.php:18 inc/location_tax.php:18
+msgid "Update Location"
+msgstr "Mettre à jour le lieu"
+
+#: inc/property_type_tax.php:19 inc/location_tax.php:19
+msgid "View Location"
+msgstr "Voir le lieu"
+
+#: inc/property_type_tax.php:20
+msgid "Separate Property types with commas"
+msgstr "Séparez les types de biens par des virgules"
+
+#: inc/property_type_tax.php:21
+msgid "Add or remove Property types"
+msgstr "Ajouter ou enlever des types de biens"
+
+#: inc/property_type_tax.php:22 inc/location_tax.php:22
+msgid "Choose from the most used"
+msgstr "Choisissez parmi les plus utilisé"
+
+#: inc/property_type_tax.php:23
+msgid "Popular Property types"
+msgstr "Types de bien populaire"
+
+#: inc/property_type_tax.php:24
+msgid "Search Property types"
+msgstr "Chercher dans les types"
+
+#: inc/property_type_tax.php:25 inc/location_tax.php:25
+msgid "Not Found"
+msgstr "non trouvé"
+
+#: inc/property_type_tax.php:26
+msgid "No Property types"
+msgstr "Aucun résultats"
+
+#: inc/property_type_tax.php:27
+msgid "Property types list"
+msgstr "Liste des types de bien immobilier"
+
+#: inc/property_type_tax.php:28
+msgid "Property types list navigation"
+msgstr "Navigation dans les types"
+
+#: inc/location_tax.php:9
+msgctxt "Taxonomy General Name"
+msgid "Locations"
+msgstr "Lieux"
+
+#: inc/location_tax.php:10
+msgctxt "Taxonomy Singular Name"
+msgid "Location"
+msgstr "Lieu"
+
+#: inc/location_tax.php:11
+msgid "Location"
+msgstr "Lieu"
+
+#: inc/location_tax.php:12
+msgid "Locations"
+msgstr "Lieux"
+
+#: inc/location_tax.php:20
+msgid "Separate Locations with commas"
+msgstr "Séparez les lieux avec des virgules"
+
+#: inc/location_tax.php:21
+msgid "Add or remove Locations"
+msgstr "Ajouter ou enlever des lieux"
+
+#: inc/location_tax.php:23
+msgid "Popular Locations"
+msgstr "Lieux populaires"
+
+#: inc/location_tax.php:24
+msgid "Search Locations"
+msgstr "Chercher des lieux"
+
+#: inc/location_tax.php:26
+msgid "No Locations"
+msgstr "Aucun lieu"
+
+#: inc/location_tax.php:27
+msgid "Locations list"
+msgstr "Liste des lieux"
+
+#: inc/location_tax.php:28
+msgid "Locations list navigation"
+msgstr "Navigation dans les lieux"
+
+#: inc/cpt.php:11
+msgctxt "Post Type General Name"
+msgid "Real estate properties"
+msgstr "Biens Immobiliers"
+
+#: inc/cpt.php:12
+msgctxt "Post Type Singular Name"
+msgid "Real estate property"
+msgstr "Bien Immobilier"
+
+#: inc/cpt.php:13 inc/cpt.php:14
+msgid "Real Estate Properties"
+msgstr "Biens Immobiliers"
+
+#: inc/cpt.php:15
+msgid "Real Estate Properties Archives"
+msgstr "Archives des Biens Immobiliers"
+
+#: inc/cpt.php:16
+msgid "Real Estate Property Attributes"
+msgstr "Attributs du Bien Immobilier"
+
+#: inc/cpt.php:17
+msgid "Parent Real Estate Property:"
+msgstr "Bien immobilier parent: "
+
+#: inc/cpt.php:18
+msgid "All Real Estate Properties"
+msgstr "Tous les biens immobiliers"
+
+#: inc/cpt.php:19
+msgid "Add New Real Estate Property"
+msgstr "Ajouter un bien immobilier"
+
+#: inc/cpt.php:20
+msgid "Add New"
+msgstr "Ajouter"
+
+#: inc/cpt.php:21
+msgid "New Real Estate Property"
+msgstr "Nouveau bien immobilier"
+
+#: inc/cpt.php:22
+msgid "Edit Real Estate Property"
+msgstr "Modifier le bien immobilier"
+
+#: inc/cpt.php:23
+msgid "Update Real Estate Property"
+msgstr "Mettre à jour un Bien Immobilier"
+
+#: inc/cpt.php:24
+msgid "View Real Estate Property"
+msgstr "Voir le bien"
+
+#: inc/cpt.php:25
+msgid "View Real Estate Properties"
+msgstr "Voir les biens"
+
+#: inc/cpt.php:26
+msgid "Search Real Estate Property"
+msgstr "Chercher un Bien Immobilier"
+
+#: inc/cpt.php:27
+msgid "Not found"
+msgstr "Non trouvé"
+
+#: inc/cpt.php:28
+msgid "Not found in Trash"
+msgstr "Rien dans la corbeille"
+
+#: inc/cpt.php:29
+msgid "Featured Image"
+msgstr "Image à la une"
+
+#: inc/cpt.php:30
+msgid "Set featured image"
+msgstr "Metre en image à la une"
+
+#: inc/cpt.php:31
+msgid "Remove featured image"
+msgstr "Enlever l'image à la une"
+
+#: inc/cpt.php:32
+msgid "Use as featured image"
+msgstr "Utiliser comme une image à la une"
+
+#: inc/cpt.php:33
+msgid "Insert into Real Estate Property"
+msgstr "Insérer dans le bien immobilier"
+
+#: inc/cpt.php:34
+msgid "Uploaded to this item"
+msgstr "Mettre en ligne sur ce bien"
+
+#: inc/cpt.php:35
+msgid "Real Estate Properties list"
+msgstr "Liste des Biens Immobiliers"
+
+#: inc/cpt.php:36
+msgid "Real Estate Properties list navigation"
+msgstr "Navigation dans les biens immobiliers"
+
+#: inc/cpt.php:37
+msgid "Filter Real Estate Properties list"
+msgstr "Filtrer la liste des biens immobiliers"
+
+#: inc/cpt.php:46
+msgid "Real estate property"
+msgstr "Biens Immobiliers"
+
+#: inc/cpt.php:47
+msgid "Post Type Description"
+msgstr "Description"
+
+#: class/class-options.php:24
+msgid "Pericles Import Settings"
+msgstr "Péricles Import"
+
+#: class/class-wpresidence.php:142
+msgid "ASP number"
+msgstr "Numéro ASP"
+
+#: 3rd-party/acf-fields/acf-options.php:13
+msgid "Options"
+msgstr "Options"
+
+#: 3rd-party/acf-fields/acf-options.php:17
+msgid "General"
+msgstr "Général"
+
+#: 3rd-party/acf-fields/acf-options.php:33
+msgid "File Name"
+msgstr "Nom du fichier"
+
+#: 3rd-party/acf-fields/acf-options.php:36
+msgid ""
+"Please fill in the exported filename saved in \"wp-content/uploads/import/\"."
+" (case sensitive)\n"
+"Example: export.ZIP"
+msgstr ""
+"Veuillez saisir le nom du fichier exporté dans \"wp-"
+"content/uploads/import/\". (Sensible à la casse)\n"
+"Exemple: export.ZIP"
+
+#: 3rd-party/acf-fields/acf-options.php:53
+msgid "Importer User"
+msgstr "Utilisateur importateur"
+
+#: 3rd-party/acf-fields/acf-options.php:71
+msgid "Pericles Version"
+msgstr "Version de Péricles"
+
+#: 3rd-party/acf-fields/acf-options.php:83
+msgid "Pericles 5 ( Desktop version)"
+msgstr "Pericles 5 ( version bureau )"
+
+#: 3rd-party/acf-fields/acf-options.php:84
+msgid "Pericles AIR"
+msgstr "Pericles AIR"
+
+#: 3rd-party/acf-fields/acf-options.php:95
+msgid "Custom Post Type"
+msgstr "Type de publication"
+
+#: 3rd-party/acf-fields/acf-options.php:111
+msgid "Create a dedicated CPT ?"
+msgstr "Créer un Type de publication dédié?"
+
+#: 3rd-party/acf-fields/acf-options.php:130
+msgid "Use a Real Estate Plugin or Theme ?"
+msgstr "Utilisez vous un thème ou une extension de biens immobilier ?"
+
+#: 3rd-party/acf-fields/acf-options.php:149
+msgid "Which Plugin or Theme do you use?"
+msgstr "Quel extension ou thème utilisez vous ?"
+
+#: 3rd-party/acf-fields/acf-options.php:192
+msgid "WP Residence"
+msgstr "WP Residence"
+
+#: 3rd-party/acf-fields/acf-options.php:216
+msgid "Fields"
+msgstr "Champs"
+
+#: 3rd-party/acf-fields/acf-options.php:219
+msgid "Check fields you want to create"
+msgstr "Cocher les champs à créer"
+
+#. Name of the plugin
+msgid "WP Pericles Import"
+msgstr "WP Pericles Import"
+
+#. Description of the plugin
+msgid "Connect your Real Estate Agency to WordPress!"
+msgstr "Connectez votre agence immobilière à WordPress !"
+
+#. URI of the plugin
+msgid "https://www.thivinfo.com"
+msgstr "https://thivinfo.com"
+
+#. Author of the plugin
+msgid "Sébastien SERRE"
+msgstr "Sébastien SERRE"
+
+#. Author URI of the plugin
+msgid "https://thivinfo.com"
+msgstr "https://thivinfo.com"

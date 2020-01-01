@@ -1,0 +1,349 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Pericles Import\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-01-01 12:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.3.1; wp-5.3.2"
+
+#: inc/property_type_tax.php:9
+msgctxt "Taxonomy General Name"
+msgid "Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:10
+msgctxt "Taxonomy Singular Name"
+msgid "Property Type"
+msgstr ""
+
+#: inc/property_type_tax.php:11
+msgid "Property Type"
+msgstr ""
+
+#: inc/property_type_tax.php:12
+msgid "Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:13 inc/location_tax.php:13
+msgid "Parent Location"
+msgstr ""
+
+#: inc/property_type_tax.php:14 inc/location_tax.php:14
+msgid "Parent Location:"
+msgstr ""
+
+#: inc/property_type_tax.php:15 inc/location_tax.php:15
+msgid "New Location Name"
+msgstr ""
+
+#: inc/property_type_tax.php:16 inc/location_tax.php:16
+msgid "Add New Location"
+msgstr ""
+
+#: inc/property_type_tax.php:17 inc/location_tax.php:17
+msgid "Edit Location"
+msgstr ""
+
+#: inc/property_type_tax.php:18 inc/location_tax.php:18
+msgid "Update Location"
+msgstr ""
+
+#: inc/property_type_tax.php:19 inc/location_tax.php:19
+msgid "View Location"
+msgstr ""
+
+#: inc/property_type_tax.php:20
+msgid "Separate Property types with commas"
+msgstr ""
+
+#: inc/property_type_tax.php:21
+msgid "Add or remove Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:22 inc/location_tax.php:22
+msgid "Choose from the most used"
+msgstr ""
+
+#: inc/property_type_tax.php:23
+msgid "Popular Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:24
+msgid "Search Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:25 inc/location_tax.php:25
+msgid "Not Found"
+msgstr ""
+
+#: inc/property_type_tax.php:26
+msgid "No Property types"
+msgstr ""
+
+#: inc/property_type_tax.php:27
+msgid "Property types list"
+msgstr ""
+
+#: inc/property_type_tax.php:28
+msgid "Property types list navigation"
+msgstr ""
+
+#: inc/location_tax.php:9
+msgctxt "Taxonomy General Name"
+msgid "Locations"
+msgstr ""
+
+#: inc/location_tax.php:10
+msgctxt "Taxonomy Singular Name"
+msgid "Location"
+msgstr ""
+
+#: inc/location_tax.php:11
+msgid "Location"
+msgstr ""
+
+#: inc/location_tax.php:12
+msgid "Locations"
+msgstr ""
+
+#: inc/location_tax.php:20
+msgid "Separate Locations with commas"
+msgstr ""
+
+#: inc/location_tax.php:21
+msgid "Add or remove Locations"
+msgstr ""
+
+#: inc/location_tax.php:23
+msgid "Popular Locations"
+msgstr ""
+
+#: inc/location_tax.php:24
+msgid "Search Locations"
+msgstr ""
+
+#: inc/location_tax.php:26
+msgid "No Locations"
+msgstr ""
+
+#: inc/location_tax.php:27
+msgid "Locations list"
+msgstr ""
+
+#: inc/location_tax.php:28
+msgid "Locations list navigation"
+msgstr ""
+
+#: inc/cpt.php:11
+msgctxt "Post Type General Name"
+msgid "Real estate properties"
+msgstr ""
+
+#: inc/cpt.php:12
+msgctxt "Post Type Singular Name"
+msgid "Real estate property"
+msgstr ""
+
+#: inc/cpt.php:13 inc/cpt.php:14
+msgid "Real Estate Properties"
+msgstr ""
+
+#: inc/cpt.php:15
+msgid "Real Estate Properties Archives"
+msgstr ""
+
+#: inc/cpt.php:16
+msgid "Real Estate Property Attributes"
+msgstr ""
+
+#: inc/cpt.php:17
+msgid "Parent Real Estate Property:"
+msgstr ""
+
+#: inc/cpt.php:18
+msgid "All Real Estate Properties"
+msgstr ""
+
+#: inc/cpt.php:19
+msgid "Add New Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:20
+msgid "Add New"
+msgstr ""
+
+#: inc/cpt.php:21
+msgid "New Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:22
+msgid "Edit Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:23
+msgid "Update Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:24
+msgid "View Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:25
+msgid "View Real Estate Properties"
+msgstr ""
+
+#: inc/cpt.php:26
+msgid "Search Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:27
+msgid "Not found"
+msgstr ""
+
+#: inc/cpt.php:28
+msgid "Not found in Trash"
+msgstr ""
+
+#: inc/cpt.php:29
+msgid "Featured Image"
+msgstr ""
+
+#: inc/cpt.php:30
+msgid "Set featured image"
+msgstr ""
+
+#: inc/cpt.php:31
+msgid "Remove featured image"
+msgstr ""
+
+#: inc/cpt.php:32
+msgid "Use as featured image"
+msgstr ""
+
+#: inc/cpt.php:33
+msgid "Insert into Real Estate Property"
+msgstr ""
+
+#: inc/cpt.php:34
+msgid "Uploaded to this item"
+msgstr ""
+
+#: inc/cpt.php:35
+msgid "Real Estate Properties list"
+msgstr ""
+
+#: inc/cpt.php:36
+msgid "Real Estate Properties list navigation"
+msgstr ""
+
+#: inc/cpt.php:37
+msgid "Filter Real Estate Properties list"
+msgstr ""
+
+#: inc/cpt.php:46
+msgid "Real estate property"
+msgstr ""
+
+#: inc/cpt.php:47
+msgid "Post Type Description"
+msgstr ""
+
+#: class/class-options.php:24
+msgid "Pericles Import Settings"
+msgstr ""
+
+#: class/class-wpresidence.php:142
+msgid "ASP number"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:13
+msgid "Options"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:17
+msgid "General"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:33
+msgid "File Name"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:36
+msgid ""
+"Please fill in the exported filename saved in \"wp-content/uploads/import/\"."
+" (case sensitive)\n"
+"Example: export.ZIP"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:53
+msgid "Importer User"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:71
+msgid "Pericles Version"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:83
+msgid "Pericles 5 ( Desktop version)"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:84
+msgid "Pericles AIR"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:95
+msgid "Custom Post Type"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:111
+msgid "Create a dedicated CPT ?"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:130
+msgid "Use a Real Estate Plugin or Theme ?"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:149
+msgid "Which Plugin or Theme do you use?"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:192
+msgid "WP Residence"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:216
+msgid "Fields"
+msgstr ""
+
+#: 3rd-party/acf-fields/acf-options.php:219
+msgid "Check fields you want to create"
+msgstr ""
+
+#. Name of the plugin
+msgid "WP Pericles Import"
+msgstr ""
+
+#. Description of the plugin
+msgid "Connect your Real Estate Agency to WordPress!"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://www.thivinfo.com"
+msgstr ""
+
+#. Author of the plugin
+msgid "Sébastien SERRE"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://thivinfo.com"
+msgstr ""
