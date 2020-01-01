@@ -95,7 +95,7 @@ class WPPericles {
 		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
 		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'load_style' ] );
-		add_action( 'plugins_loaded', [ $this, 'load_textdomain'] );
+		add_action( 'plugins_loaded', [ $this, 'load_textdomain'] , 999);
 
 		add_filter( 'acf/settings/save_json', [ $this, 'acf_save_point' ] );
 		add_filter( 'acf/settings/l10n_textdomain', [ $this, 'acf_textdomain' ] );
@@ -201,10 +201,8 @@ class WPPericles {
 	 */
 	public function acf_save_point( $path ) {
 
-
 		// update path
 		$path = WP_PERICLES_PLUGIN_PATH . '/3rd-party/acf-fields';
-
 
 		// return
 		return $path;

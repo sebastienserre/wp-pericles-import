@@ -11,7 +11,6 @@ use function get_field;
 use function get_fields;
 use function ob_get_clean;
 use function ob_start;
-use function sizeof;
 use function str_replace;
 use function ucwords;
 use function var_dump;

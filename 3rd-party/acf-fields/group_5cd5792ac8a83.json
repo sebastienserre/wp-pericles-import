@@ -1,0 +1,243 @@
+{
+    "key": "group_5cd5792ac8a83",
+    "title": "Options",
+    "fields": [
+        {
+            "key": "field_5cd5793e1309c",
+            "label": "Général",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5cd5794d1309d",
+            "label": "Nom du fichier",
+            "name": "wppericles_nom_zip",
+            "type": "text",
+            "instructions": "Veuillez saisir le nom du fichier exporté dans \"wp-content\/uploads\/import\/\". (Sensible à la casse)\nExemple: export.ZIP",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "export.ZIP",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
+            "key": "field_5cd6a074abb59",
+            "label": "Utilisateur importateur",
+            "name": "wppericles_utilisateur_importateur",
+            "type": "user",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "role": "",
+            "allow_null": 0,
+            "multiple": 0,
+            "return_format": "object"
+        },
+        {
+            "key": "field_5e09bad4d0fc0",
+            "label": "Version de Péricles",
+            "name": "wppericles_version",
+            "type": "radio",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "5": "Pericles 5 ( version bureau )",
+                "air": "Pericles AIR"
+            },
+            "allow_null": 1,
+            "other_choice": 0,
+            "default_value": 5,
+            "layout": "vertical",
+            "return_format": "value",
+            "save_other_choice": 0
+        },
+        {
+            "key": "field_5df0911ea92a4",
+            "label": "Type de publication",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5d4edf4f8b75b",
+            "label": "Créer un Type de publication dédié?",
+            "name": "wppericles_create_cpt",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_5df091ff974cc",
+            "label": "Utilisez vous un thème ou une extension de biens immobilier ?",
+            "name": "wppericles_use_external",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 1,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
+            "key": "field_5df0caffcf03b",
+            "label": "Quel extension ou thème utilisez vous ?",
+            "name": "wppericles_list_external",
+            "type": "select",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_5d4edf4f8b75b",
+                        "operator": "!=",
+                        "value": "1"
+                    },
+                    {
+                        "field": "field_5df092c933060",
+                        "operator": "!=",
+                        "value": "1"
+                    },
+                    {
+                        "field": "field_5df091ff974cc",
+                        "operator": "==",
+                        "value": "1"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": {
+                "estate_property": "WP Residence",
+                "listing": "WP Casa"
+            },
+            "default_value": [],
+            "allow_null": 0,
+            "multiple": 0,
+            "ui": 0,
+            "return_format": "value",
+            "ajax": 0,
+            "placeholder": ""
+        },
+        {
+            "key": "field_5df390d90f1c6",
+            "label": "WP Residence",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": [
+                [
+                    {
+                        "field": "field_5df0caffcf03b",
+                        "operator": "==",
+                        "value": "estate_property"
+                    }
+                ]
+            ],
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5df392b38746d",
+            "label": "Champs",
+            "name": "wppericles_wp_residence_fields",
+            "type": "checkbox",
+            "instructions": "Cocher les champs à créer",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "choices": [],
+            "allow_custom": 0,
+            "default_value": [],
+            "layout": "horizontal",
+            "toggle": 1,
+            "return_format": "label",
+            "save_custom": 0
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "options_page",
+                "operator": "==",
+                "value": "pericles-import-settings"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "modified": 1577886811
+}
