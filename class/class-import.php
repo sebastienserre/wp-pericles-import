@@ -2,6 +2,8 @@
 
 namespace WP_PERICLES\IMPORT;
 
+use WP_PERICLES\IMPORT\FormatData\Format_Data;
+use WP_PERICLES\IMPORT\WPCasa\WPCasa;
 use WP_PERICLES\IMPORT\WPResidence\WPResidence;
 use function add_action;
 use function apply_filters;
@@ -17,7 +19,6 @@ use function file_exists;
 use function get_field;
 use function get_post_meta;
 use function get_term_by;
-use function get_the_ID;
 use function has_post_thumbnail;
 use function implode;
 use function intval;
@@ -36,7 +37,6 @@ use function wp_check_filetype;
 use function wp_delete_file;
 use function wp_generate_attachment_metadata;
 use function wp_get_attachment_url;
-use function wp_get_upload_dir;
 use function wp_insert_attachment;
 use function wp_insert_post;
 use function wp_insert_term;
@@ -68,8 +68,6 @@ class Import {
 	protected $cpt;
 	protected $location;
 	protected $type;
-	protected $node;
-
 
 	public function __construct() {
 		add_action( 'wppericles_hourly_cron', array( $this, 'extract_photo' ) );
@@ -80,7 +78,6 @@ class Import {
 		$this->cpt      = $this->get_cpt();
 		$this->location = $this->get_location();
 		$this->type     = $this->get_property_type();
-		$this->node     = $this->get_node_name();
 
 
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
@@ -105,16 +102,12 @@ class Import {
 		return $this->set_zipname();
 	}
 
-	public function get_node_name() {
-		return $this->set_node_name();
-	}
-
-	public function set_node_name() {
-		$node = $element->BIEN;
-		if ( $this->is_pericles_air() ) {
+	public function get_node_name( $element ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$node = $element->ANNONCES->ANNONCE;
+		} else {
+			$node = $element->BIEN;
 		}
-
 		return $node;
 	}
 
@@ -123,7 +116,7 @@ class Import {
 	 */
 	public function set_name() {
 		$name = $this->zipname;
-		if ( ! $this->is_pericles_air() ) {
+		if ( ! Format_Data::is_pericles_air() ) {
 			$name = explode( '.', $this->zipname );
 			$name = $name[0] . '.XML';
 		}
@@ -163,10 +156,14 @@ class Import {
 	public function set_location() {
 		if ( ! empty( $this->cpt ) ) {
 			switch ( $this->cpt ) {
-				case 'estate_property' :
+				case 'estate_property' : // if WP Residence
 					$taxo = 'property_city';
 					break;
+				case 'listing' : // if WPCasa
+					$taxo = 'location';
+					break;
 				case 'real-estate-property' :
+				default:
 					$taxo = 'location_tax';
 					break;
 			}
@@ -178,11 +175,15 @@ class Import {
 	public function set_property_type() {
 		if ( ! empty( $this->cpt ) ) {
 			switch ( $this->cpt ) {
-				case 'estate_property' :
+				case 'estate_property' : // if WP Residence
 					$type = 'property_category';
 					break;
-				case 'real-estate-property' :
+				case 'listing' : // if WPCasa
 					$type = 'property_types';
+					break;
+				case 'real-estate-property' :
+				default:
+					$type = 'listing-type';
 					break;
 			}
 		}
@@ -191,7 +192,7 @@ class Import {
 	}
 
 	public function get_property_situation( $bien ) {
-		if ( ! $this->is_pericles_air() ) {
+		if ( ! Format_Data::is_pericles_air() ) {
 			$situation_name = sanitize_text_field( strval( $bien->VILLE_OFFRE ) );
 		} else {
 			$situation_name = sanitize_text_field( strval( $bien->VILLE ) );
@@ -206,7 +207,7 @@ class Import {
 	}
 
 	public function get_property_term( $bien ) {
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$property_name = sanitize_text_field( strval( $bien->CAT ) );
 		} else {
 			$property_name = sanitize_text_field( strval( $bien->CATEGORIE ) );
@@ -231,16 +232,7 @@ class Import {
 
 		return apply_filters( 'wppericles_cpt', $cpt );
 	}
-
-	public function is_pericles_air() {
-		$version = get_field( 'wppericles_version', 'option' );
-		if ( 'air' === $version ) {
-			return true;
-		}
-
-		return false;
-	}
-
+	
 	public function extract_photo() {
 
 		$date = date_i18n( 'Y-m-d-H-i' );
@@ -265,7 +257,7 @@ class Import {
 		copy( WP_PERICLES_IMPORT . $this->zipname, WP_PERICLES_EXPORT_FOLDER . 'export-' . $date . '.zip' );
 
 		error_log( "$this->zipname copied" );
-		if ( ! $this->is_pericles_air() ) {
+		if ( ! Format_Data::is_pericles_air() ) {
 			$zip = new ZipArchive();
 			$res = $zip->open( $file );
 			if ( $res === true ) {
@@ -275,7 +267,7 @@ class Import {
 			}
 		}
 
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			if ( ! file_exists( WP_PERICLES_IMPORT_TMP ) ) {
 				mkdir( WP_PERICLES_IMPORT_TMP, 0777, true );
 			}
@@ -331,7 +323,7 @@ class Import {
 	}
 
 	public function format_date_post( $bien ) {
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$date      = $bien->DATE_MAND . ' ' . '09:00:00';
 		} else {
 			$post_date = explode( '/', $bien->DATE_OFFRE );
@@ -342,7 +334,7 @@ class Import {
 	}
 
 	public function format_date_modif( $bien ) {
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$post_modified = $bien->DATE_MODIF_PRIX . ' ' . '09:00:00';
 		} else {
 			$post_modified = explode( '/', $bien->DATE_MODIF );
@@ -355,16 +347,13 @@ class Import {
 	public function read_xml() {
 		set_time_limit( 1800 );
 		error_log( 'start read_xml' );
-		$xml           = new XMLReader();
-		$open          = $xml->open( WP_PERICLES_IMPORT_TMP . $this->name );
-		$read          = $xml->read();
-		$name          = $xml->name;
-		$element       = new SimpleXMLElement( $xml->readOuterXml() );
-		if ( $this->is_pericles_air() ) {
-			$node = $element->ANNONCES->ANNONCE;
-		} else {
-			$node = $element->BIEN;
-		}
+		$xml     = new XMLReader();
+		$open    = $xml->open( WP_PERICLES_IMPORT_TMP . $this->name );
+		$read    = $xml->read();
+		$name    = $xml->name;
+		$element = new SimpleXMLElement( $xml->readOuterXml() );
+		$node    = $this->get_node_name( $element );
+
 		foreach ( $node as $bien ) {
 			$args    = array(
 				'post_type'  => $this->cpt,
@@ -432,6 +421,7 @@ class Import {
 			);
 
 			$insert = wp_insert_post( $postarr, true );
+				$this->format_postmeta( $detail, $bien, $element, $insert );
 
 			/**
 			 * Fires just after Property is inserted in db
@@ -464,14 +454,17 @@ class Import {
 		error_log( 'stop read_xml' );
 	}
 
-	public function format_postmeta( $detail, $bien, $element = '' ) {
+	public function format_postmeta( $detail, $bien, $element = '', $id ='' ) {
 		switch ( $this->cpt ) {
-			case 'estate_property':
+			case 'estate_property': // if WP Residence
 				$detail = WPResidence::estate_property_meta( $detail, $bien );
+				break;
+			case 'listing': //if WP Casa
+				$detail = WPCasa::listing_meta( $detail, $bien, $id );
 				break;
 			case 'real-estate-property':
 			default:
-				if ( ! $this->is_pericles_air() ) {
+				if ( ! Format_Data::is_pericles_air() ) {
 					$detail = $this->real_estate_property_meta( $detail, $bien );
 				} else {
 					$detail                                                    = $this->air_real_estate_property_meta( $detail, $bien );
@@ -727,7 +720,7 @@ class Import {
 	}
 
 	public function create_title( $bien ) {
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$args_title = [
 				sanitize_text_field( strval( $bien->CAT ) ),
 				sanitize_text_field( strval( $bien->VILLE_WEB ) ),
@@ -747,7 +740,7 @@ class Import {
 	}
 
 	public function create_content( $bien ) {
-		if ( $this->is_pericles_air() ) {
+		if ( Format_Data::is_pericles_air() ) {
 			$content = nl2br( strval( $bien->TXT_INTERNET ) );
 		} else {
 			$content = nl2br( strval( $bien->TEXTE_FR ) );
