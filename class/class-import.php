@@ -2,7 +2,6 @@
 
 namespace WP_PERICLES\IMPORT;
 
-use WP_Error;
 use WP_PERICLES\IMPORT\FormatData\Format_Data;
 use WP_PERICLES\IMPORT\WPCasa\WPCasa;
 use WP_PERICLES\IMPORT\WPResidence\WPResidence;
@@ -15,17 +14,14 @@ use function copy;
 use function date;
 use function delete_post_meta;
 use function do_action;
-use function error_log;
 use function explode;
 use function file_exists;
 use function get_field;
 use function get_post_meta;
 use function get_term_by;
-use function get_the_ID;
 use function has_post_thumbnail;
 use function implode;
 use function intval;
-use function is_wp_error;
 use function mkdir;
 use function nl2br;
 use function preg_replace;
@@ -41,7 +37,6 @@ use function wp_check_filetype;
 use function wp_delete_file;
 use function wp_generate_attachment_metadata;
 use function wp_get_attachment_url;
-use function wp_get_upload_dir;
 use function wp_insert_attachment;
 use function wp_insert_post;
 use function wp_insert_term;
@@ -73,8 +68,6 @@ class Import {
 	protected $cpt;
 	protected $location;
 	protected $type;
-	protected $node;
-
 
 	public function __construct() {
 		add_action( 'wppericles_hourly_cron', array( $this, 'extract_photo' ) );
@@ -85,7 +78,6 @@ class Import {
 		$this->cpt      = $this->get_cpt();
 		$this->location = $this->get_location();
 		$this->type     = $this->get_property_type();
-		$this->node     = $this->get_node_name();
 
 
 		if ( ! empty( $_GET['test'] ) && 'ok' === $_GET['test'] ) {
@@ -116,7 +108,6 @@ class Import {
 		} else {
 			$node = $element->BIEN;
 		}
-
 		return $node;
 	}
 
@@ -333,9 +324,7 @@ class Import {
 
 	public function format_date_post( $bien ) {
 		if ( Format_Data::is_pericles_air() ) {
-			if ( ! empty( $bien->DATE_CREATION ) ) {
-				$date = $bien->DATE_CREATION . ' ' . '09:00:00';
-			}
+			$date      = $bien->DATE_MAND . ' ' . '09:00:00';
 		} else {
 			$post_date = explode( '/', $bien->DATE_OFFRE );
 			$date      = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
@@ -432,11 +421,6 @@ class Import {
 			);
 
 			$insert = wp_insert_post( $postarr, true );
-			if ( is_wp_error( $insert ) ){
-				error_log( "error on $i" );
-				error_log( "modified: $post_modified & post: $post_date" );
-				error_log( $insert->get_error_message() );
-			}
 				$this->format_postmeta( $detail, $bien, $element, $insert );
 
 			/**
@@ -450,7 +434,7 @@ class Import {
 			$loc = wp_set_post_terms( $insert, $situation->term_id, $this->location, true );
 
 			$this->prepare_gallery( $insert, $bien, $title );
-			$i++;
+
 		}
 		/**
 		 * On supprime le dossier temporaire puis on le recrée vide pour le prochain import.
