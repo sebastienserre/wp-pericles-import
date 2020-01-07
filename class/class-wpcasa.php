@@ -58,13 +58,15 @@ class WPCasa {
 
 	public function register_cat( $post_id, $bien ){
 		if ( Format_Data::is_pericles_air() ) {
-			$term = get_term_by( 'name', strval( $bien->CAT ), 'listing-category' );
-			if ( ! $term ) {
-				$term = wp_insert_term( strval( $bien->CAT ), 'listing-category' );
-			}
-			$set_post_term = wp_set_post_terms( $post_id, $term->term_id, 'listing-category', true );
-
+			$cat = strval( $bien->CAT );
+		} else {
+			$cat = strval( $bien->CATEGORIE);
 		}
+		$term = get_term_by( 'name', $cat, 'listing-category' );
+		if ( ! $term ) {
+			$term = wp_insert_term( $cat, 'listing-category' );
+		}
+		$set_post_term = wp_set_post_terms( $post_id, $term->term_id, 'listing-category', true );
 	}
 }
 
