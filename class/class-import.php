@@ -350,7 +350,7 @@ class Import {
 
 	public function format_date_post( $bien ) {
 		if ( Format_Data::is_pericles_air() ) {
-			$date      = $bien->DATE_MAND . ' ' . '09:00:00';
+			$date      = $bien->DATE_CREATION . ' ' . '09:00:00';
 		} else {
 			$post_date = explode( '/', $bien->DATE_OFFRE );
 			$date      = $post_date[2] . '-' . $post_date[1] . '-' . $post_date[0] . ' ' . '09:00:00';
@@ -379,19 +379,6 @@ class Import {
 		$name    = $xml->name;
 		$element = new SimpleXMLElement( $xml->readOuterXml() );
 		$node    = $this->get_node_name( $element );
-		/**
-		 * http://sandbox.onlinephpfunctions.com/code/b8383b8956810f384bf97080afd774a01ea8b220
-		$xml=<<<EOT
-		<?xml version="1.0" standalone="yes"?>
-		<movies>
-		<movie cat="1">
-		<title>PHP: Behind the Parser</title>
-		</movie>
-		</movies>
-		EOT;
-		$movies = new SimpleXMLElement($xml);
-		echo "Cat=".$movies->movie['cat'];
-		 */
 
 		foreach ( $node as $bien ) {
 			$args    = array(
