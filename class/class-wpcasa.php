@@ -41,7 +41,7 @@ class WPCasa {
 		$detail['_details_5']                        = sanitize_text_field( $datas['exterieur_terrasse'] );
 		$detail['_details_6']                        = sanitize_text_field( $datas['annexes_nb_parking_interieur'] );
 		$detail['_details_7']                        = sanitize_text_field( $datas['pratique_type_chauffage'] );
-		$detail['wppericles_agence_wp_pericles_asp'] = sanitize_text_field( $datas['agence_wp_pericles_asp'] );
+		$detail['wppericles_agence_wp_pericles_asp'] = sanitize_text_field( $datas['wppericles_agence_wp_pericles_asp'] );
 
 		$chb = intval( $datas['interieur_nb_chambres'] );
 		$update_id = update_post_meta( $id, 'details_1', $chb );
