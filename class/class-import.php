@@ -14,6 +14,7 @@ use function copy;
 use function date;
 use function delete_post_meta;
 use function do_action;
+use function error_log;
 use function explode;
 use function file_exists;
 use function get_field;
@@ -179,11 +180,11 @@ class Import {
 					$type = 'property_category';
 					break;
 				case 'listing' : // if WPCasa
-					$type = 'property_types';
+					$type = 'listing-type';
 					break;
 				case 'real-estate-property' :
 				default:
-					$type = 'listing-type';
+					$type = 'property_types';
 					break;
 			}
 		}
@@ -208,7 +209,8 @@ class Import {
 
 	public function get_property_term( $bien ) {
 		if ( Format_Data::is_pericles_air() ) {
-			$property_name = sanitize_text_field( strval( $bien->CAT ) );
+			$property_name = sanitize_text_field( strval( $bien[ 'TYPE_BIEN'] ) );
+			$property_name = $this->air_get_property_type( $property_name );
 		} else {
 			$property_name = sanitize_text_field( strval( $bien->CATEGORIE ) );
 		}
@@ -219,6 +221,30 @@ class Import {
 		}
 
 		return $property_term;
+	}
+
+	/**
+	 * @param $property_code
+	 *
+	 * @author  Sébastien SERRE
+	 * @package wp-pericles-import
+	 * @since   jan2020
+	 */
+	public function air_get_property_type( $property_code ){
+		$type = [
+			'1'  => 'vente appartement',
+			'2'  => 'vente maison',
+			'5'  => 'vente local commercial',
+			'7'  => 'vente box/parking',
+			'11' => 'location appartement',
+			'12' => 'location maison',
+			'13' => 'location local commercial',
+		];
+		if ( ! empty( $type[ $property_code ] ) ){
+			return $type[ $property_code ];
+		} else {
+			return __( 'Please contact support@thivinfo.com with missing code to add it', 'wp-pericles-import' );
+		}
 	}
 
 	public function set_cpt() {
@@ -353,6 +379,19 @@ class Import {
 		$name    = $xml->name;
 		$element = new SimpleXMLElement( $xml->readOuterXml() );
 		$node    = $this->get_node_name( $element );
+		/**
+		 * http://sandbox.onlinephpfunctions.com/code/b8383b8956810f384bf97080afd774a01ea8b220
+		$xml=<<<EOT
+		<?xml version="1.0" standalone="yes"?>
+		<movies>
+		<movie cat="1">
+		<title>PHP: Behind the Parser</title>
+		</movie>
+		</movies>
+		EOT;
+		$movies = new SimpleXMLElement($xml);
+		echo "Cat=".$movies->movie['cat'];
+		 */
 
 		foreach ( $node as $bien ) {
 			$args    = array(
