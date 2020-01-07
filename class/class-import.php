@@ -234,6 +234,7 @@ class Import {
 		$type = [
 			'1'  => 'vente appartement',
 			'2'  => 'vente maison',
+			'4'  => 'vente d\'immeuble',
 			'5'  => 'vente local commercial',
 			'7'  => 'vente box/parking',
 			'11' => 'location appartement',
