@@ -4,13 +4,19 @@ namespace WP_PERICLES\IMPORT\WPCasa;
 
 use WP_PERICLES\IMPORT\FormatData\Format_Data;
 use WP_PERICLES\IMPORT\WPResidence\WPResidence;
+use function add_action;
 use function class_exists;
+use function error_log;
 use function get_field;
+use function get_term_by;
 use function intval;
+use function is_wp_error;
 use function sanitize_text_field;
 use function strval;
 use function update_post_meta;
 use function wp_die;
+use function wp_insert_term;
+use function wp_set_post_terms;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -26,6 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPCasa {
 
 	public function __construct() {
+		add_action( 'wppericles_after_insert_property', [ $this, 'register_cat' ], 10, 2 );
 	}
 
 	public static function listing_meta( $detail, $bien, $id ) {
@@ -47,6 +54,17 @@ class WPCasa {
 		$update_id = update_post_meta( $id, 'details_1', $chb );
 
 		return $detail;
+	}
+
+	public function register_cat( $post_id, $bien ){
+		if ( Format_Data::is_pericles_air() ) {
+			$term = get_term_by( 'name', strval( $bien->CAT ), 'listing-category' );
+			if ( ! $term ) {
+				$term = wp_insert_term( strval( $bien->CAT ), 'listing-category' );
+			}
+			$set_post_term = wp_set_post_terms( $post_id, $term->term_id, 'listing-category', true );
+
+		}
 	}
 }
 
