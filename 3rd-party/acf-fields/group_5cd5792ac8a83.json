@@ -80,6 +80,25 @@
             "save_other_choice": 0
         },
         {
+            "key": "field_5e255aa334be1",
+            "label": "API Key",
+            "name": "api_key",
+            "type": "text",
+            "instructions": "",
+            "required": 1,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "",
+            "prepend": "",
+            "append": "",
+            "maxlength": ""
+        },
+        {
             "key": "field_5df0911ea92a4",
             "label": "Type de publication",
             "name": "",
@@ -97,7 +116,7 @@
         },
         {
             "key": "field_5d4edf4f8b75b",
-            "label": "Créer un Type de publication dédié?",
+            "label": "Create a dedicated CPT ?",
             "name": "wppericles_create_cpt",
             "type": "true_false",
             "instructions": "",
@@ -220,6 +239,39 @@
             "toggle": 1,
             "return_format": "label",
             "save_custom": 0
+        },
+        {
+            "key": "field_5e0cad85a5fa9",
+            "label": "Help",
+            "name": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0
+        },
+        {
+            "key": "field_5e0cad95a5faa",
+            "label": "Find Help",
+            "name": "",
+            "type": "message",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "Ceci est un test",
+            "new_lines": "wpautop",
+            "esc_html": 0
         }
     ],
     "location": [
@@ -237,7 +289,7 @@
     "label_placement": "top",
     "instruction_placement": "label",
     "hide_on_screen": "",
-    "active": true,
+    "active": 1,
     "description": "",
-    "modified": 1577886811
+    "modified": 1579506369
 }
