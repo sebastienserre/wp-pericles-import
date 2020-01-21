@@ -125,8 +125,8 @@ class WPPericles {
 		define( 'WP_PERICLES_IMPORT_IMG', $path['basedir'] . '/import/img/' );
 		define( 'WP_PERICLES_EXPORT_FOLDER', $path['basedir'] . '/import/export/' );
 
-		define( 'CONSUMER_KEY', 'ck_2272fdcb154d3b68a0123966d24d7d40efeb5728');
-		define( 'SECRET_KEY', 'cs_72ce7a4edaed47d8387cfbdc98ef9e486d272766');
+		define( 'THFO_CONSUMER_KEY', 'ck_2272fdcb154d3b68a0123966d24d7d40efeb5728');
+		define( 'THIFO_SECRET_KEY', 'cs_72ce7a4edaed47d8387cfbdc98ef9e486d272766');
 
 		// Define path and URL to the ACF plugin.
 		//https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/

@@ -89,8 +89,8 @@ class Licence {
 
 	public function check_key_validity() {
 		$key          = get_field( 'api_key', 'options' );
-		$ck           = CONSUMER_KEY;
-		$cs           = SECRET_KEY;
+		$ck           = THFO_CONSUMER_KEY;
+		$cs           = THFO_SECRET_KEY;
 		$url          = "https://thivinfo.com/wp-json/lmfwc/v2/licenses/$key?consumer_key=$ck&consumer_secret=$cs";
 		$decoded_body = $this->get_decoded_body( $url );
 		$this->product_id = $decoded_body["data"]["productId"];
@@ -148,12 +148,9 @@ class Licence {
 	}
 
 	public function prefix_plugin_update_message( $data, $response ) {
-		//if( isset( $data['upgrade_notice'] ) ) {
-		printf(
-			'<div class="update-message">test</div>',
-
-		);
-		//}
+		?>
+        <div class="update-message">test</div>
+		<?php
 	}
 
 	public function check_update() {
