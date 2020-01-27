@@ -1,0 +1,28 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-01-27 07:54+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: Loco https://localise.biz/\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;"
+
+#: class/class-licence.php:187
+msgid "The API key seems invalid, please check again"
+msgstr ""
+
+#: class/class-licence.php:202
+msgid "The API key field seems empty, please check again"
+msgstr ""
+
+#: class/class-licence.php:300
+#, php-format
+msgid "Please activate your %s licence key in settings"
+msgstr ""

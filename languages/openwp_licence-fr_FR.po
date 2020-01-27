@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Français\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2020-01-27 07:54+0000\n"
+"PO-Revision-Date: 2020-01-27 07:55+0000\n"
+"X-Generator: Loco https://localise.biz/\n"
+"Last-Translator: sebastienserre <sebastien@thivinfo.com>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: fr_FR\n"
+"X-Loco-Version: 2.3.1; wp-5.3.2"
+
+#: class/class-licence.php:187
+msgid "The API key seems invalid, please check again"
+msgstr "La clé API semble invalide, merci de vérifer"
+
+#: class/class-licence.php:202
+msgid "The API key field seems empty, please check again"
+msgstr "Le champs Clé API semble vide, merci de vérifier"
+
+#: class/class-licence.php:300
+#, php-format
+msgid "Please activate your %s licence key in settings"
+msgstr "Veuillez activer votre clé de licence pour %s dans les réglages "
