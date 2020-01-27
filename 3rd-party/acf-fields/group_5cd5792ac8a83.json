@@ -99,6 +99,25 @@
             "maxlength": ""
         },
         {
+            "key": "field_5e2e8ce1898ba",
+            "label": "Activate API Key",
+            "name": "activate_apikey",
+            "type": "true_false",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "",
+            "ui_off_text": ""
+        },
+        {
             "key": "field_5df0911ea92a4",
             "label": "Type de publication",
             "name": "",
@@ -291,5 +310,5 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1579506369
+    "modified": 1580109111
 }

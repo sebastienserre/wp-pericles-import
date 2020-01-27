@@ -16,9 +16,11 @@ namespace WPPERICLES;
 use function acf_update_setting;
 use function add_action;
 use function add_filter;
+use function basename;
 use function class_exists;
 use function create_cpt;
 use function define;
+use function dirname;
 use function flush_rewrite_rules;
 use function plugin_basename;
 use function plugin_dir_path;
@@ -40,48 +42,6 @@ use const WP_PERICLES_PLUGIN_URL;
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 } // Exit if accessed directly.
-
-if ( ! function_exists( 'wpi_fs' ) ) {
-	// Create a helper function for easy SDK access.
-	function wpi_fs() {
-		global $wpi_fs;
-
-		if ( ! isset( $wpi_fs ) ) {
-			// Include Freemius SDK.
-			require_once dirname( __FILE__ ) . '/freemius/start.php';
-
-			$wpi_fs = fs_dynamic_init( array(
-				'id'               => '3794',
-				'slug'             => 'wp-pericles-import',
-				'type'             => 'plugin',
-				'public_key'       => 'pk_b9019383dae04d104205b2de99d6c',
-				'is_premium'       => true,
-				'is_premium_only'  => true,
-				'has_addons'       => false,
-				'has_paid_plans'   => true,
-				'is_org_compliant' => false,
-				'trial'            => array(
-					'days'               => 30,
-					'is_require_payment' => false,
-				),
-				'menu'             => array(
-					'slug'    => 'pericles-import-settings',
-					'support' => false,
-				),
-				// Set the SDK to work in a sandbox mode (for development & testing).
-				// IMPORTANT: MAKE SURE TO REMOVE SECRET KEY BEFORE DEPLOYMENT.
-				'secret_key'       => 'sk_W]fiYg098e?MANn~iIml0b0x^2L7<',
-			) );
-		}
-
-		return $wpi_fs;
-	}
-
-	// Init Freemius.
-	wpi_fs();
-	// Signal that SDK was initiated.
-	do_action( 'wpi_fs_loaded' );
-}
 
 /**
  * Class WPPericles
@@ -114,6 +74,10 @@ class WPPericles {
 		define( 'WP_PERICLES_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 		define( 'WP_PERICLES_PLUGIN_DIR', untrailingslashit( 'WP_PERICLES' ) );
 		define( 'WP_PERICLES_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+		define( 'THFO_PLUGIN_VERSION', '1.3.4' );
+		define( 'THFO_PLUGIN_NAME', dirname( plugin_basename( __FILE__ ) ) );
+		define( 'THFO_OPENWP_PLUGIN_FILE', plugin_basename( __FILE__ ) );
+		define( 'THFO_SLUG', basename( __FILE__ ) );
 
 		// Update
 		define( 'WP_MAIN_FILE_PLUGIN_PATH',  __FILE__ );
@@ -126,7 +90,7 @@ class WPPericles {
 		define( 'WP_PERICLES_EXPORT_FOLDER', $path['basedir'] . '/import/export/' );
 
 		define( 'THFO_CONSUMER_KEY', 'ck_2272fdcb154d3b68a0123966d24d7d40efeb5728');
-		define( 'THIFO_SECRET_KEY', 'cs_72ce7a4edaed47d8387cfbdc98ef9e486d272766');
+		define( 'THFO_CONSUMER_SECRET', 'cs_72ce7a4edaed47d8387cfbdc98ef9e486d272766');
 
 		// Define path and URL to the ACF plugin.
 		//https://www.advancedcustomfields.com/resources/including-acf-within-a-plugin-or-theme/
