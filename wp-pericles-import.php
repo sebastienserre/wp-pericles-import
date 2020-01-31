@@ -5,17 +5,14 @@
 	Description: Connect your Real Estate Agency to WordPress!
 	Author: Sébastien SERRE
 	Author URI: https://thivinfo.com
-	Version: 1.4.0
+	Version: 1.4.1
 	Text Domain: wp-pericles-import
 	Domain Path: /languages
 	*/
 
 namespace WPPERICLES;
 
-
-use function _e;
 use function acf_update_setting;
-use function acfe;
 use function add_action;
 use function add_filter;
 use function basename;
@@ -33,7 +30,6 @@ use function register_activation_hook;
 use function register_deactivation_hook;
 use function time;
 use function untrailingslashit;
-use function var_dump;
 use function wp_clear_scheduled_hook;
 use function wp_enqueue_style;
 use function wp_get_upload_dir;
@@ -78,7 +74,7 @@ class WPPericles {
 		define( 'WP_PERICLES_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 		define( 'WP_PERICLES_PLUGIN_DIR', untrailingslashit( 'WP_PERICLES' ) );
 		define( 'WP_PERICLES_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-		define( 'THFO_PLUGIN_VERSION', '1.4.0' );
+		define( 'THFO_PLUGIN_VERSION', '1.4.1' );
 		define( 'THFO_PLUGIN_NAME', dirname( plugin_basename( __FILE__ ) ) );
 		define( 'THFO_OPENWP_PLUGIN_FILE', plugin_basename( __FILE__ ) );
 		define( 'THFO_SLUG', basename( __FILE__ ) );
