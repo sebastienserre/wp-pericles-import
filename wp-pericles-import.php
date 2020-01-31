@@ -13,13 +13,17 @@
 namespace WPPERICLES;
 
 
+use function _e;
 use function acf_update_setting;
+use function acfe;
 use function add_action;
 use function add_filter;
 use function basename;
 use function class_exists;
 use function create_cpt;
+use function deactivate_plugins;
 use function define;
+use function defined;
 use function dirname;
 use function flush_rewrite_rules;
 use function plugin_basename;
@@ -107,6 +111,9 @@ class WPPericles {
 		if ( ! wp_next_scheduled( 'wppericles_hourly_cron' ) ) {
 			$cron = wp_schedule_event( time(), 'hourly', 'wppericles_hourly_cron' );
 		}
+		if ( ! defined('ACF_PRO') && class_exists( 'ACF' ) ){
+			deactivate_plugins( 'advanced-custom-fields/acf.php' );
+		}
 
 	}
 
@@ -122,7 +129,7 @@ class WPPericles {
 	public function load_files() {
 
 		// Include the ACF plugin.
-		if ( ! class_exists( 'ACF' ) ) {
+		if (  ! class_exists( 'ACF' )  ) {
 			include_once WP_PERICLES_ACF_PATH . 'acf.php';
 		}
 		require plugin_dir_path( __FILE__ ) . '/class/class-format-data.php';
@@ -230,6 +237,7 @@ class WPPericles {
 	public function load_textdomain() {
 		$lang = load_plugin_textdomain( 'wp-pericles-import', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
+
 }
 
 new WPPericles();

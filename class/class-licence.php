@@ -135,9 +135,6 @@ class Licence {
 	 * @return mixed
 	 */
 	public function getKey() {
-		if ( ! class_exists( 'ACF' ) ) {
-			return;
-		}
 
 		if ( function_exists( 'get_field' ) && ! empty( get_field( 'api_key', 'options' ) ) ) {
 			$key = get_field( 'api_key', 'options' );
