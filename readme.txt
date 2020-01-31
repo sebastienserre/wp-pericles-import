@@ -6,7 +6,7 @@ Tags: Real Estate, Pericles
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.3
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPL V2 or later
 
 # WP Pericles Import
@@ -15,7 +15,8 @@ Cette extension WordPress a été créée suite à mon tutoriel [Exporter des bi
 Suite à plusieurs demandes, j'ai créé cette extension qui va synchroniser via une tache planifié les biens entre Péricles et WordPress.  
 
 ## Comment ca fonctionne?  
-Cette extension crée un type de contenu "real-estate-property" et va décompresser et lire l'export Péricles pour créer ou mettre à jour les biens immobilier dans WordPress.  
+Cette extension crée un type de contenu "real-estate-property" et va décompresser et lire l'export Péricles pour créer
+ou mettre à jour les biens immobilier dans WordPress.
 Ensuite, libre à vous de créer les templates de pages en respectant la [wphierarchy](https://wphierarchy.com/)  
 
 ## Astuces  
