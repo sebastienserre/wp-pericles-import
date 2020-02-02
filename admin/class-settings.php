@@ -79,7 +79,6 @@ class Settings {
 				'key'      => get_option( 'thfo_api_key' ),
 			];
 		}
-		global $wp;
 		$activation_url = wp_nonce_url(
 			add_query_arg(
 				$args,
