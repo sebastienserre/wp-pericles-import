@@ -298,7 +298,7 @@
             {
                 "param": "options_page",
                 "operator": "==",
-                "value": "pericles-import-settings"
+                "value": "acf-options-pericles-import-options"
             }
         ]
     ],
@@ -310,5 +310,14 @@
     "hide_on_screen": "",
     "active": 1,
     "description": "",
-    "modified": 1580109111
+    "acfe_display_title": "",
+    "acfe_autosync": [
+        "php",
+        "json"
+    ],
+    "acfe_permissions": "",
+    "acfe_form": 0,
+    "acfe_meta": "",
+    "acfe_note": "",
+    "modified": 1580663591
 }

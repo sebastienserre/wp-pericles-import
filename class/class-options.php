@@ -12,19 +12,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Options {
 
 	public function __construct() {
-		add_action( 'plugins_loaded', array( $this, 'add_option_page' ), 999 );
+		add_action( 'acf/init', array( $this, 'add_option_page' ), 15 );
 	}
 
 	public function add_option_page() {
 
-		if ( function_exists( 'acf_add_options_page' ) ) {
+		if ( function_exists( 'acf_add_options_sub_page' ) ) {
 
-			acf_add_options_page(
+			acf_add_options_sub_page(
 				array(
-					'page_title' => __( 'Pericles Import Settings', 'wp-pericles-import' ),
-					'menu_slug'  => 'pericles-import-settings',
-					'capability' => 'edit_posts',
-					'redirect'   => false,
+					'page_title' => __( 'Pericles Import Options', 'wp-pericles-import' ),
+					'menu_title'  => 'Pericles Import Options',
+					'parent_slug' => 'options-general.php',
 				)
 			);
 		}

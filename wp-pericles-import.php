@@ -53,7 +53,8 @@ class WPPericles {
 	public function __construct() {
 
 		add_action( 'plugins_loaded', array( $this, 'define_constants' ) );
-		add_action( 'plugins_loaded', array( $this, 'load_files' ) );
+		add_action( 'plugins_loaded', array( $this, 'load_acf' ), 10, 1 );
+		add_action( 'plugins_loaded', array( $this, 'load_files' ), 9999, 1 );
 		add_action( 'plugins_loaded', array( $this, 'get_plugin_datas' ) );
 		add_action( 'acf/include_fields', [ $this, 'my_register_fields' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'load_style' ] );
@@ -122,25 +123,30 @@ class WPPericles {
 		flush_rewrite_rules();
 	}
 
-	public function load_files() {
-
+	public function load_acf(){
 		// Include the ACF plugin.
 		if (  ! class_exists( 'ACF' )  ) {
 			include_once WP_PERICLES_ACF_PATH . 'acf.php';
 		}
+
+		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
+	}
+
+	public function load_files() {
+
 		require plugin_dir_path( __FILE__ ) . '/class/class-format-data.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-wpresidence.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-wpcasa.php';
-		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
-		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
 		require plugin_dir_path( __FILE__ ) . '/cron.php';
-		require plugin_dir_path( __FILE__ ) . '/class/class-options.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/cpt.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/location_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/property_type_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
-		require plugin_dir_path( __FILE__ ) . '/licence/class-licence.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/templating.php';
+		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
+		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
+		require plugin_dir_path( __FILE__ ) . '/admin/class-settings.php';
+		require plugin_dir_path( __FILE__ ) . '/licence/class-licence.php';
 
 	}
 
