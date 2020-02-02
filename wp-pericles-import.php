@@ -139,7 +139,7 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/inc/location_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/property_type_tax.php';
 		require plugin_dir_path( __FILE__ ) . '/class/class-import.php';
-		require plugin_dir_path( __FILE__ ) . '/class/class-licence.php';
+		require plugin_dir_path( __FILE__ ) . '/licence/class-licence.php';
 		require plugin_dir_path( __FILE__ ) . '/inc/templating.php';
 
 	}
