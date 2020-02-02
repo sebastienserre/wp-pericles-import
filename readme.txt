@@ -6,7 +6,7 @@ Tags: Real Estate, Pericles
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.3
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPL V2 or later
 
 # WP Pericles Import
