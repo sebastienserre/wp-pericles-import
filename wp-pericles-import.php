@@ -146,7 +146,7 @@ class WPPericles {
 		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-biens.php';
 		require plugin_dir_path( __FILE__ ) . '/3rd-party/acf-fields/acf-options.php';
 		require plugin_dir_path( __FILE__ ) . '/admin/class-settings.php';
-		require plugin_dir_path( __FILE__ ) . '/licence/class-licence.php';
+	//	require plugin_dir_path( __FILE__ ) . '/licence/class-licence.php';
 
 	}
 
